@@ -1,12 +1,15 @@
 #!/bin/bash
-cautils=`which caUtils`
-if [ ! -f $cautils ]; then
-    echo "You need to have caUtils from the CollectiveAccess installation directory on your PATH"
-    echo "  it should be a file at /support/bin/caUtils relative to your providence installation"
+set -e
+set -u
+hash caUtils 2>/dev/null || {
+    echo >&2 "You need to have caUtils from the CollectiveAccess installation directory on your PATH"
+    exit 1;
+}
+if [ -z "${COLLECTIVEACCESS_HOME-}" ];then
+    echo >&2 "You should have the COLLECTIVEACCESS_HOME environment variable defined"
     exit 1
-fi
-if [ ! -d $COLLECTIVEACCESS_HOME ]; then
-    echo "You should have the COLLECTIVEACCESS_HOME environment variable defined"
+elif [ ! -d "${COLLECTIVEACCESS_HOME}" ]; then
+    echo >&2 "The COLLECTIVEACCESS_HOME environment variable is defined but does not point to a valid directory"
     exit 1
 fi
 
