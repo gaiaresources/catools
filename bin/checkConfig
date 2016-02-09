@@ -3,7 +3,7 @@ set -e
 set -u
 
 base="${BASH_SOURCE%/*}"
-pushd `dirname "$base"` > /dev/null
+pushd `dirname "${base}"` > /dev/null
 confFile="conf/dbsettings"
 if [ ! -f "${confFile}" ]; then
     echo "You do not have a configuration for the source database (${confFile}). I will try to copy the default configuration. Please edit it to correspond to your source database settings  " 1>&2
