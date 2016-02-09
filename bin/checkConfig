@@ -9,7 +9,7 @@ if [ $# -ne 1 ];then
     popd>/dev/null
     exit 1
 fi
-confFile="conf/$0"
+confFile="conf/$1"
 if [ ! -f "${confFile}" ]; then
     echo "You do not have a configuration for the source database (${confFile}). I will try to copy the default configuration. Please edit it to correspond to your source database settings  " 1>&2
     cp -v "${confFile}".template "${confFile}"
