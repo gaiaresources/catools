@@ -1,20 +1,8 @@
 <?php
+require_once('AbstractProfileTest.php');
 
-class ProfileElementTest extends PHPUnit_Framework_TestCase
+class ProfileElementTest extends AbstractProfileTest
 {
-    /** @var DOMDocument */
-    private $profile;
-    /** @var  DOMXPath */
-    private $xpath;
-
-    public function setUp()
-    {
-        $basePath = dirname(dirname(__DIR__));
-        $this->profile = new DOMDocument();
-        $this->profile->load("$basePath/profile/rwahs.xml");
-        $this->xpath = new DOMXPath($this->profile);
-    }
-
     public function testListAttributesHaveLists()
     {
         $list_elements = $this->xpath->query('/profile/elementSets/metadataElement[@datatype="List"]');
@@ -32,9 +20,6 @@ class ProfileElementTest extends PHPUnit_Framework_TestCase
     {
         $restrictions = $this->xpath->query('/profile/elementSets/metadataElement/typeRestrictions/restriction');
         /** @var DOMElement $restriction */
-        $table_map = array(
-            'ca_entities' => 'entity'
-        );
         foreach ($restrictions as $restriction) {
             $table = $restriction->getElementsByTagName('table')->item(0)->textContent;
             $metadata_element = $restriction->parentNode->parentNode;
@@ -56,18 +41,11 @@ class ProfileElementTest extends PHPUnit_Framework_TestCase
                     $selector .= "/types/type[@code='$type']";
                     $this->assertEquals(1, $this->xpath->query($selector)->length, "The `$selector` element should exist in the profile.");
                 } else {
-                    if (isset($table_map[$table])) {
-                        $table = $table_map[$table];
-                    } else {
-                        $table = preg_replace('/^ca_(.*)s$/', '$1', $table);
-                    }
-                    $list_code = $table . '_types';
-                    $type_list = $this->xpath->query("/profile/lists/list[@code='$list_code']");
-                    $this->assertEquals(1, $type_list->length, "The type list for $table ($list_code) needs to exist.");
-                    $this->assertEquals(1, $this->xpath->query("/profile/lists/list[@code='$list_code']/items/item[@idno='$type']")->length, "The type '$type' must exist in the list for $table ($list_code).");
+                    $this->typeExistsForTable($type, $table);
                 }
             }
-
         }
     }
+
+
 }
