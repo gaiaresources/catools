@@ -66,11 +66,16 @@ class ProfileUiTest extends AbstractProfileTest
         $attribute_count = 0;
         /** @var DOMElement $ui */
         foreach ($uis as $ui) {
+            $ui_table = $ui->getAttribute('type');
             /** @var DOMElement $attribute_ui_placement */
             foreach ($this->xpath->query($ui->getNodePath() . "/screens/screen/bundlePlacements/placement/bundle[starts-with(.,'ca_attribute')]") as $attribute_ui_placement) {
                 $attribute_count ++;
                 $attribute_code = preg_replace('/^ca_attribute_/', '', $attribute_ui_placement->textContent);
                 $this->assertEquals(1, $this->xpath->query("/profile/elementSets/metadataElement[@code='$attribute_code']")->length, "The attribute `$attribute_code` should exist in the installation profile. Placement is at: " . $attribute_ui_placement->getNodePath());
+                $this->assertGreaterThanOrEqual(1, $this->xpath->query("/profile/elementSets/metadataElement[@code='$attribute_code']/typeRestrictions/restriction/table[text() = '$ui_table']")->length, "The attribute `$attribute_code` is used in a user interface for `$ui_table` ({$ui->getAttribute('code')}).
+                 The attribute does not have a type restriction for that table.
+                 Placement is at: " . $attribute_ui_placement->getNodePath());
+
             }
         }
         $this->assertGreaterThan(0, $attribute_count, 'At least one restriction should exist');
