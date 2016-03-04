@@ -50,7 +50,6 @@ class ProfileUiTest extends AbstractProfileTest
         /** @var DOMElement $ui */
         foreach ($uis as $ui) {
             /** @var DOMElement $relation_restriction */
-
             foreach ($this->xpath->query("{$ui->getNodePath()}/screens/screen/bundlePlacements/placement/settings/setting[@name='restrict_to_type']") as $relation_restriction) {
                 $restrictions_count++;
                 $bundle = $relation_restriction->parentNode->parentNode->getElementsByTagName('bundle')->item(0);
@@ -60,4 +59,20 @@ class ProfileUiTest extends AbstractProfileTest
         $this->assertGreaterThan(0, $restrictions_count, 'At least one restriction should exist');
     }
 
+    public function testAttributeExistsForAttributeBundles()
+    {
+        $uis_path = "/profile/userInterfaces/userInterface";
+        $uis = $this->xpath->query($uis_path);
+        $attribute_count = 0;
+        /** @var DOMElement $ui */
+        foreach ($uis as $ui) {
+            /** @var DOMElement $attribute_ui_placement */
+            foreach ($this->xpath->query($ui->getNodePath() . "/screens/screen/bundlePlacements/placement/bundle[starts-with(.,'ca_attribute')]") as $attribute_ui_placement) {
+                $attribute_count ++;
+                $attribute_code = preg_replace('/^ca_attribute_/', '', $attribute_ui_placement->textContent);
+                $this->assertEquals(1, $this->xpath->query("/profile/elementSets/metadataElement[@code='$attribute_code']")->length, "The attribute `$attribute_code` should exist in the installation profile. Placement is at: " . $attribute_ui_placement->getNodePath());
+            }
+        }
+        $this->assertGreaterThan(0, $attribute_count, 'At least one restriction should exist');
+    }
 }
