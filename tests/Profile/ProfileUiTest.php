@@ -1,6 +1,8 @@
 <?php
 
-require_once('AbstractProfileTest.php');
+namespace RWAHS\Profile;
+
+use DOMElement;
 
 class ProfileUiTest extends AbstractProfileTest
 {

@@ -14,11 +14,12 @@
          stopOnFailure="false"
          stopOnIncomplete="false"
          stopOnSkipped="false"
-         verbose="false">
+         verbose="false"
+  >
 
     <testsuites>
         <testsuite name="Profile Test Suite">
-            <directory>profile/</directory>
+            <directory>Profile/</directory>
         </testsuite>
     </testsuites>
 </phpunit>

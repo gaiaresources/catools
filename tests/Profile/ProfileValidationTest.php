@@ -1,4 +1,5 @@
 <?php
+namespace RWAHS\Profile;
 
 class ProfileValidationTest extends AbstractProfileTest
 {

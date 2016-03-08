@@ -1,5 +1,5 @@
 <?php
-require_once('AbstractProfileTest.php');
+namespace RWAHS\Profile;
 
 class ProfileElementTest extends AbstractProfileTest
 {

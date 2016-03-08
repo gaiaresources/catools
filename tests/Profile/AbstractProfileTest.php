@@ -1,4 +1,9 @@
 <?php
+namespace RWAHS\Profile;
+
+use PHPUnit_Framework_TestCase;
+use DOMDocument;
+use DOMXPath;
 
 abstract class AbstractProfileTest extends PHPUnit_Framework_TestCase
 {
@@ -19,6 +24,7 @@ abstract class AbstractProfileTest extends PHPUnit_Framework_TestCase
     /**
      * @param $type
      * @param $table
+     * @param null $context
      * @return mixed
      */
     protected function typeExistsForTable($type, $table, $context = null)
