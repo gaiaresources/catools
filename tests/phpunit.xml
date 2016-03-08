@@ -1,9 +1,9 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/3.7/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/5.1/phpunit.xsd"
          backupGlobals="false"
          backupStaticAttributes="false"
          cacheTokens="false"
-         colors="false"
+         colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
@@ -14,12 +14,12 @@
          stopOnFailure="false"
          stopOnIncomplete="false"
          stopOnSkipped="false"
-         strict="false"
-         verbose="false">
+         verbose="false"
+  >
 
     <testsuites>
         <testsuite name="Profile Test Suite">
-            <directory>profile/</directory>
+            <directory>Profile/</directory>
         </testsuite>
     </testsuites>
 </phpunit>
