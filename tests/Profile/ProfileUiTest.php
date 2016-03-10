@@ -2,6 +2,7 @@
 
 namespace RWAHS\Profile;
 
+use DOMAttr;
 use DOMElement;
 
 class ProfileUiTest extends AbstractProfileTest
@@ -61,6 +62,7 @@ class ProfileUiTest extends AbstractProfileTest
     public function testAttributeExistsForAttributeBundles()
     {
         $attribute_count = 0;
+        $exceptions = array('Description', 'LastEditDate', 'LastEditBy');
         /** @var DOMElement $attribute_ui_placement */
         foreach ($this->xpath->query("/profile/userInterfaces/userInterface/screens/screen/bundlePlacements/placement/bundle[starts-with(.,'ca_attribute')]") as $attribute_ui_placement) {
             /** @var DOMElement $ui */
@@ -74,6 +76,19 @@ class ProfileUiTest extends AbstractProfileTest
             $this->assertGreaterThanOrEqual(1, $this->xpath->query("/profile/elementSets/metadataElement[@code='$attribute_code']/typeRestrictions/restriction/table[text() = '$ui_table']")->length, "The attribute `$attribute_code` is used in a user interface for `$ui_table` ({$ui->getAttribute('code')}).
              The attribute does not have a type restriction for that table.
              Placement is at: " . $attribute_ui_placement->getNodePath());
+            $ui_types = $this->xpath->query("{$ui->getNodePath()}/typeRestrictions/restriction/@type");
+            $type_count = 0;
+            /** @var DOMAttr $type_attribute */
+            foreach($ui_types as $type_attribute){
+                $type_attribute->textContent;
+                $type_count ++;
+                if(!in_array($attribute_code, $exceptions)){
+                    $this->assertEquals(1, $this->xpath->query("/profile/elementSets/metadataElement[@code='$attribute_code']/typeRestrictions/restriction/type[text() = '$type_attribute->textContent']")->length,
+                        "The attribute `$attribute_code` is used in a user interface for `$ui_table` ({$ui->getAttribute('code')}).
+             The attribute does not have a type restriction for that type `$type_attribute->textContent`
+             Placement is at: " . $attribute_ui_placement->getNodePath());
+                }
+            }
         }
         $this->assertGreaterThan(1, $attribute_count, 'At least one restriction should exist');
     }

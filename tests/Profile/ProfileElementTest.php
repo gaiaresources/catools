@@ -24,7 +24,7 @@ class ProfileElementTest extends AbstractProfileTest
         /** @var DOMElement $restriction */
         foreach ($restrictions as $restriction) {
             $table = $restriction->getElementsByTagName('table')->item(0)->textContent;
-            $metadata_element = $restriction->parentNode->parentNode;
+            $metadata_element = $this->xpath->query('ancestor::metadataElement', $restriction)->item(0);
             $this->assertEquals('metadataElement', $metadata_element->nodeName);
             $interstitial = false;
             $selector = '';
@@ -47,7 +47,21 @@ class ProfileElementTest extends AbstractProfileTest
                 }
             }
         }
-    }
+    } public function testObjectTypeRestrictionsHaveTypes()
+    {
+        $restrictions = $this->xpath->query('/profile/elementSets/metadataElement[not(@code = "Description" or @code = "LastEditBy" or @code = "LastEditDate" or @code = "LegacyID")]/typeRestrictions/restriction[table = "ca_objects"]');
+        /** @var DOMElement $restriction */
+        foreach ($restrictions as $restriction) {
+            /** @var DOMElement $metadata_element */
+            $metadata_element = $this->xpath->query('ancestor::metadataElement', $restriction)->item(0);
+            $table = $restriction->getElementsByTagName('table')->item(0)->textContent;
 
+            $type_element = $restriction->getElementsByTagName('type');
+            $this->assertEquals(1, $type_element->length, "The metadata element {$metadata_element->getAttribute('code')} in the table $table at {$restriction->getNodePath()} requires a type restriction and does not have one");
+            if ($type_element->length) {
+
+            }
+        }
+    }
 
 }
