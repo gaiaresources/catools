@@ -9,8 +9,9 @@ class ProfileUiTest extends AbstractProfileTest
     public function testProfileContainsUis()
     {
         $xpath = $this->xpath;
-        $this->assertEquals(13, $xpath->query('//userInterfaces/userInterface')->length, 'The number of user interfaces should match');
+        $this->assertEquals(14, $xpath->query('//userInterfaces/userInterface')->length, 'The number of user interfaces should match');
         $this->assertEquals(1, $xpath->query('//userInterfaces/userInterface[@code="museum_object_ui"]')->length, 'The user interface with code "museum_object_ui" should exist.');
+        $this->assertEquals(1, $xpath->query('//userInterfaces/userInterface[@code="library_object_ui"]')->length, 'The user interface with code "library_object_ui" should exist.');
         $this->assertEquals(1, $xpath->query('//userInterfaces/userInterface[@code="standard_entity_ui"]')->length, 'The user interface with code "standard_entity_ui" should exist.');
         $this->assertEquals(1, $xpath->query('//userInterfaces/userInterface[@code="subject_list_ui"]')->length, 'The user interface with code "subject_list_ui" should exist.');
         $this->assertEquals(1, $xpath->query('//userInterfaces/userInterface[@code="conservation_ui"]')->length, 'The user interface with code "conservation_ui" should exist.');
