@@ -1,6 +1,8 @@
 <?php
 namespace RWAHS\Profile;
 
+use DOMElement;
+
 class ProfileElementTest extends AbstractProfileTest
 {
     public function testListAttributesHaveLists()
