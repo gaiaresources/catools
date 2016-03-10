@@ -75,6 +75,37 @@ class ProfileUiTest extends AbstractProfileTest
              The attribute does not have a type restriction for that table.
              Placement is at: " . $attribute_ui_placement->getNodePath());
         }
-        $this->assertGreaterThan(0, $attribute_count, 'At least one restriction should exist');
+        $this->assertGreaterThan(1, $attribute_count, 'At least one restriction should exist');
+    }
+
+    public function testNonAttributeBundlesExist()
+    {
+        $attribute_count = 0;
+        $known_bundles = array(
+            // intrinsics
+            'idno', 'access', 'status', 'acquisition_type_id', 'idno_stub', 'lot_status_id', 'extent',
+            // interstitial
+            'effective_date', 'source_info',
+            // labels
+            'preferred_labels', 'nonpreferred_labels',
+            // related classes
+            'ca_object_representations', 'ca_occurrences', 'ca_entities', 'ca_collections','ca_loans', 'ca_objects',
+            'ca_object_lots', 'ca_places', 'ca_storage_locations', 'ca_list_items', 'ca_representation_annotations', 'ca_representation_annotation_properties',
+            // special
+            'ca_objects_location', 'ca_objects_deaccession', 'hierarchy_navigation', 'hierarchy_location', 'ca_storage_locations_contents', 'media'
+            );
+        /** @var DOMElement $ui_placement */
+        foreach ($this->xpath->query("/profile/userInterfaces/userInterface/screens/screen/bundlePlacements/placement/bundle[not(starts-with(.,'ca_attribute'))]") as $ui_placement) {
+            /** @var DOMElement $ui */
+            $ui = $this->xpath->query('ancestor::userInterface[@type]', $ui_placement)->item(0);
+            $ui_table = $ui->getAttribute('type');
+            $bundle = $ui_placement->textContent;
+            $this->assertContains($bundle, $known_bundles,
+                "The bundle `$bundle` is used in a user interface for `$ui_table` ({$ui->getAttribute('code')}).
+             The attribute does not have a type restriction for that table.
+             Placement is at: " . $ui_placement->getNodePath());
+            $attribute_count++;
+        }
+        $this->assertGreaterThan(1, $attribute_count, 'At least one restriction should exist');
     }
 }
