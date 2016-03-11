@@ -1,18 +1,31 @@
 <?php
 namespace RWAHS\Profile;
 
+use DOMElement;
+
 class ProfileElementTest extends AbstractProfileTest
 {
     public function testListAttributesHaveLists()
     {
         $list_elements = $this->xpath->query('/profile/elementSets/metadataElement[@datatype="List"]');
-        $this->assertEquals(8, $list_elements->length, 'Number of list attributes should match.');
+        $this->assertEquals(12, $list_elements->length, 'Number of list attributes should match.');
         /** @var DOMElement $list_element */
         foreach ($list_elements as $list_element) {
             $list_code = $list_element->getAttribute('list');
             $element_code = $list_element->getAttribute('code');
             $this->assertNotNull($list_code, "The list attribute needs to be set for the {$list_element->getNodePath()} element");
-            $this->assertEquals(1, $this->xpath->query("/profile/lists/list[@code='$list_code']")->length, "List attributes require a matching list. The list '$list_code' does not exist and is required for the $element_code element.");
+            $this->assertEquals(1, $this->xpath->query("/profile/lists/list[@code='$list_code']")->length, "List attributes require a matching list. The list '$list_code' does not exist and is required for the $element_code element." .
+                "\nHere's an xml element:\n" .
+                <<<"LIST_XML"
+<list code="$list_code" hierarchical="0" system="1" vocabulary="0">
+  <labels>
+    <label locale="en_AU">
+      <name>$list_code</name>
+    </label>
+  </labels>
+</list>
+LIST_XML
+            );
         }
     }
 
@@ -22,7 +35,7 @@ class ProfileElementTest extends AbstractProfileTest
         /** @var DOMElement $restriction */
         foreach ($restrictions as $restriction) {
             $table = $restriction->getElementsByTagName('table')->item(0)->textContent;
-            $metadata_element = $restriction->parentNode->parentNode;
+            $metadata_element = $this->xpath->query('ancestor::metadataElement', $restriction)->item(0);
             $this->assertEquals('metadataElement', $metadata_element->nodeName);
             $interstitial = false;
             $selector = '';
@@ -47,5 +60,42 @@ class ProfileElementTest extends AbstractProfileTest
         }
     }
 
+    public function testObjectTypeRestrictionsHaveTypes()
+    {
+        $restrictions = $this->xpath->query('/profile/elementSets/metadataElement[not(@code = "Description" or @code = "LastEditBy" or @code = "LastEditDate" or @code = "LegacyID")]/typeRestrictions/restriction[table = "ca_objects"]');
+        /** @var DOMElement $restriction */
+        foreach ($restrictions as $restriction) {
+            /** @var DOMElement $metadata_element */
+            $metadata_element = $this->xpath->query('ancestor::metadataElement', $restriction)->item(0);
+            $table = $restriction->getElementsByTagName('table')->item(0)->textContent;
+
+            $type_element = $restriction->getElementsByTagName('type');
+            $this->assertEquals(1, $type_element->length, "The metadata element {$metadata_element->getAttribute('code')} in the table $table at {$restriction->getNodePath()} requires a type restriction and does not have one");
+            if ($type_element->length) {
+
+            }
+        }
+    }
+
+    public function testCheckboxesUseYesNoLists()
+    {
+        $checkbox_settings = $this->xpath->query('//metadataElement[@datatype="List"]/settings/setting[@name="render" and text() = "yes_no_checkboxes"]');
+        $this->assertGreaterThan(0, $checkbox_settings->length, 'You need to have at least one checkbox element in your profile');
+        /** @var DOMElement $checkbox_setting */
+        foreach($checkbox_settings as $checkbox_setting){
+            $metadata_element = $checkbox_setting->parentNode->parentNode;
+            $this->assertContains($metadata_element->getAttribute('list'), array('YesNoDefaultNo','YesNoDefaultYes'), "All checkbox fields should be bound to one of the YesNo lists. Element: `{$metadata_element->getAttribute('code')}`` List: `{$metadata_element->getAttribute('list')}``" );
+        }
+    }
+
+    public function testYesNoListsUseCheckboxes()
+    {
+        $yes_no_list_elements = $this->xpath->query('//metadataElement[@datatype="List" and (@list = "YesNoDefaultNo" or @list = "YesNoDefaultYes")]');
+        $this->assertGreaterThan(0, $yes_no_list_elements->length, 'You need to have at least one element associated with the YesNo lists');
+        /** @var DOMElement $metadata_element */
+        foreach($yes_no_list_elements as $metadata_element){
+            $this->assertEquals('yes_no_checkboxes', $this->xpath->query($metadata_element->getNodePath() . '/settings/setting[@name="render"]')->item(0)->textContent, "All elements associated with YesNo lists should be rendered as `yes_no_checkboxes`. Element: `{$metadata_element->getAttribute('code')}`` List: `{$metadata_element->getAttribute('list')}``");
+        }
+    }
 
 }
