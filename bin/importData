@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+set -e
+set -u
+
+function urlencode() {
+    ## function to encode where queries
+    echo -n "$1" | perl -MURI::Escape -ne 'print uri_escape($_)'
+}
+function sqltransform() {
+    sqlContent=`cat sql/transformations/"$1"`
+    echo "Running migration $1"
+    # execute the sql in a transaction
+    echo "BEGIN; ${sqlContent} COMMIT;"|mysql -u"${sourceUserName}" -p"${sourcePassword}" -h"${sourceHostname}" "${sourceDatabase}"
+}
+function refreshData() {
+    echo "No data transformation set for this import">&2
+    echo "You should define a refreshData() method in your import script">&2
+    exit 1
+}
+function importData() {
+    source ../conf/dbsettings
+    limit=0
+    offset=0
+    mapping_extension=xlsx
+    mapping_file="${mapping}"."${mapping_extension}"
+    logdir=importlog
+    mkdir -p "${logdir}"
+    # so that we can see the results of the import and so that the transaction doesn't get too big
+    dontUseATransaction="--direct"
+    # disable search indexing on import then reindex at the end
+    indexOnTheFly="--no-search-indexing"
+    importFormat=mysql
+    reIndex=false
+    while getopts rpdmhl:o:ifg:q: param; do
+        case ${param} in
+
+            l)
+                limit="${OPTARG}"
+            ;;
+            o)
+                offset="${OPTARG}"
+            ;;
+            g)
+                logdir="${OPTARG}"
+            ;;
+            r)
+                # refresh data
+                refreshData
+            ;;
+            p)
+                mysql -u"${sourceUserName}" -p"${sourcePassword}" -h"${sourceHostname}" "${sourceDatabase}" < sql/generateDataReport.sql
+            ;;
+            d)
+            #download mapping from google drive
+                drive download -i "${mapping_id}" --format "${mapping_extension}" --force
+            ;;
+            m)
+                #load mapping
+                caUtils load-import-mapping -l "${logdir}" -d DEBUG -f "${mapping_file}"
+                exit 0
+            ;;
+            i)
+                reIndex=true
+            ;;
+            f)
+                indexOnTheFly=""
+            ;;
+            q)
+                mysqlWhereQuery=" WHERE ${OPTARG}"
+                sourceTable=$(urlencode "${sourceTable}${mysqlWhereQuery}")
+                echo "${mysqlWhereQuery}"
+            ;;
+            h)
+                echo "Usage $0 [-r -d -m -l -o -i -g -q -f -p -h]"
+                echo "Flags:"
+                echo "  -r  refresh source data"
+                echo "  -d  download mapping from google drive"
+                echo "  -m  reload CollectiveAccess mapping"
+                echo "  -l  specify the limit for the data load"
+                echo "  -o  specify the offset for the data import"
+                echo "  -i  rebuild the search index after import"
+                echo "  -g  directory to log output to. Defaults to [importlog] within the current directory"
+                echo "  -q  WHERE query to perform on the source table"
+                echo "      eg: -q \"ItemType IN ('Museum Artefact', 'Artwork')\""
+                echo "  -f  index on the fly"
+                echo "  -p  produce a data report about the source data. Warning takes several hours."
+                echo "  -h  show this help"
+                echo "  -i  rebuild the search index after import"
+                exit
+            ;;
+        esac
+    done
+
+    mysqlConnectionString="mysql://${sourceUserName}:${sourcePassword}@${sourceHostname}/${sourceDatabase}?table=${sourceTable}&limit=${limit}&offset=${offset}"
+
+    caUtils import-data --disable-ncurses -m "${mapping_machine_name}" -s "${mysqlConnectionString}" -l "${logdir}" -d DEBUG -f "${importFormat}" "${dontUseATransaction}" "${indexOnTheFly}"
+    if [ "${reIndex}" = true ] ; then
+        echo "Rebuilding search index"
+        caUtils rebuild-search-index
+    fi
+
+
+}
