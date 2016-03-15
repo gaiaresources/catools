@@ -98,4 +98,20 @@ LIST_XML
         }
     }
 
+    public function testMuseumFieldsExistOnPhotographsAndPublicMemorials()
+    {
+        $museum_restrictions = $this->xpath->query('//metadataElement//restriction[table="ca_objects" and type="museum"]');
+        $this->assertGreaterThan(0, $museum_restrictions->length, 'xpath not returning any museum restrictions');
+        /** @var DOMElement $restriction */
+        foreach($museum_restrictions as $restriction){
+            /** @var DOMElement $metadata_element */
+            $metadata_element = $this->xpath->query('ancestor::metadataElement', $restriction)->item(0);
+            $code = $metadata_element->getAttribute('code');
+            if(!in_array($code, array('Description', 'LastEditDate', 'LastEditBy'))){
+                $this->assertEquals(1, $this->xpath->query($metadata_element->getNodePath() . '/typeRestrictions/restriction[table="ca_objects" and type="photograph"]')->length, "Expect to have a restriction for objects of type `photograph` for the element `$code`");
+                $this->assertEquals(1, $this->xpath->query($metadata_element->getNodePath() . '/typeRestrictions/restriction[table="ca_objects" and type="publicMemorial"]')->length, "Expect to have a restriction for objects of type `publicMemorial` for the element `$code`");
+            }
+        }
+    }
+
 }
