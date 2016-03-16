@@ -18,6 +18,11 @@ function refreshData() {
     exit 1
 }
 function importData() {
+    # perform pre-execution checks
+    checkConfig dbsettings
+    checkCollectiveAccess
+    checkGdrive
+
     source ../conf/dbsettings
     limit=0
     offset=0
