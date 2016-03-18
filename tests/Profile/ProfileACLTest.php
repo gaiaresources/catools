@@ -16,7 +16,7 @@ class ProfileACLTest extends AbstractProfileTest
     public function testProfileContainsRoles()
     {
         $xpath = $this->xpath;
-        $this->assertEquals(2, $xpath->query('/profile/roles/role')->length, 'The number of roles should match');
+        $this->assertEquals(3, $xpath->query('/profile/roles/role')->length, 'The number of roles should match');
         $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="museum"]')->length, 'The role with code "museum" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="library"]')->length, 'The role with code "library" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="photograph"]')->length, 'The role with code "photograph" should exist.');
