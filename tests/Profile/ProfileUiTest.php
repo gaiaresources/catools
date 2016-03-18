@@ -10,9 +10,10 @@ class ProfileUiTest extends AbstractProfileTest
     public function testProfileContainsUis()
     {
         $xpath = $this->xpath;
-        $this->assertEquals(14, $xpath->query('/profile/userInterfaces/userInterface')->length, 'The number of user interfaces should match');
+        $this->assertEquals(15, $xpath->query('/profile/userInterfaces/userInterface')->length, 'The number of user interfaces should match');
         $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="museum_object_ui"]')->length, 'The user interface with code "museum_object_ui" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="library_object_ui"]')->length, 'The user interface with code "library_object_ui" should exist.');
+        $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="photograph_object_ui"]')->length, 'The user interface with code "photograph_object_ui" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="standard_entity_ui"]')->length, 'The user interface with code "standard_entity_ui" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="subject_list_ui"]')->length, 'The user interface with code "subject_list_ui" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="conservation_ui"]')->length, 'The user interface with code "conservation_ui" should exist.');
@@ -98,7 +99,7 @@ class ProfileUiTest extends AbstractProfileTest
         $attribute_count = 0;
         $known_bundles = array(
             // intrinsics
-            'idno', 'access', 'status', 'acquisition_type_id', 'idno_stub', 'lot_status_id', 'extent',
+            'idno', 'access', 'status', 'acquisition_type_id', 'idno_stub', 'lot_status_id', 'extent', 'object_id',
             // interstitial
             'effective_date', 'source_info',
             // labels
