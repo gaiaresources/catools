@@ -37,4 +37,13 @@ class ProfileACLTest extends AbstractProfileTest
         $this->assertEquals(0, $xpath->query('/profile/userInterfaces/userInterface[@code="photograph_object_ui"]/groupAccess/permission[@group="museum" and @access="edit"]')->length, 'The museum role should not have edit access to the photograph editor');
         $this->assertEquals(0, $xpath->query('/profile/userInterfaces/userInterface[@code="photograph_object_ui"]/groupAccess/permission[@group="library" and @access="edit"]')->length, 'The library role should not have edit access to the photograph editor');
     }
+
+    public function testExampleUsersExist()
+    {
+        /** @var \DOMElement $role */
+        foreach($this->xpath->query('/profile/roles/role') as $role){
+            $role_code = $role->getAttribute('code');
+            $this->assertEquals(1, $this->xpath->query("/profile/logins/login[@user_name='$role_code']")->length, "An example user for the role `$role_code` should exist");
+        }
+    }
 }
