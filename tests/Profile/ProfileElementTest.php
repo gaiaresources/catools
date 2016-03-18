@@ -114,4 +114,9 @@ LIST_XML
         }
     }
 
+    public function testContainersHaveElements()
+    {
+        $this->assertEquals(0, $this->xpath->query('/profile/elementSets//metadataElement[@datatype="Container" and not(elements/metadataElement)]')->length, 'Container elements require child elements');
+    }
+
 }
