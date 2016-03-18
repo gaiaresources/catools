@@ -99,7 +99,7 @@ class ProfileUiTest extends AbstractProfileTest
         $attribute_count = 0;
         $known_bundles = array(
             // intrinsics
-            'idno', 'access', 'status', 'acquisition_type_id', 'idno_stub', 'lot_status_id', 'extent',
+            'idno', 'access', 'status', 'acquisition_type_id', 'idno_stub', 'lot_status_id', 'extent', 'object_id',
             // interstitial
             'effective_date', 'source_info',
             // labels
