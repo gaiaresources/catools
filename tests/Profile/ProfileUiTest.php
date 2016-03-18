@@ -13,7 +13,7 @@ class ProfileUiTest extends AbstractProfileTest
         $this->assertEquals(14, $xpath->query('/profile/userInterfaces/userInterface')->length, 'The number of user interfaces should match');
         $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="museum_object_ui"]')->length, 'The user interface with code "museum_object_ui" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="library_object_ui"]')->length, 'The user interface with code "library_object_ui" should exist.');
-        $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="photographs_object_ui"]')->length, 'The user interface with code "photographs_object_ui" should exist.');
+        $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="photograph_object_ui"]')->length, 'The user interface with code "photograph_object_ui" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="standard_entity_ui"]')->length, 'The user interface with code "standard_entity_ui" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="subject_list_ui"]')->length, 'The user interface with code "subject_list_ui" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/userInterfaces/userInterface[@code="conservation_ui"]')->length, 'The user interface with code "conservation_ui" should exist.');
