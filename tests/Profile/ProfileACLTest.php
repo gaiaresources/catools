@@ -57,4 +57,9 @@ class ProfileACLTest extends AbstractProfileTest
             $this->assertEquals(1, $this->xpath->query("/profile/logins/login[@user_name='$role_code']")->length, "An example user for the role `$role_code` should exist");
         }
     }
+
+    public function testCataloguerPermissions()
+    {
+        $this->assertEquals(56, $this->xpath->query('/profile/roles/role[@code="cataloguer"]/actions/action')->length, 'The number of actions in the cataloguer role must be equal.');
+    }
 }
