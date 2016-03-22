@@ -17,11 +17,12 @@ class ProfileACLTest extends AbstractProfileTest
     public function testProfileContainsRoles()
     {
         $xpath = $this->xpath;
-        $this->assertEquals(4, $xpath->query('/profile/roles/role')->length, 'The number of roles should match');
+        $this->assertEquals(5, $xpath->query('/profile/roles/role')->length, 'The number of roles should match');
         $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="museum"]')->length, 'The role with code "museum" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="library"]')->length, 'The role with code "library" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="photograph"]')->length, 'The role with code "photograph" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="memorial"]')->length, 'The role with code "memorial" should exist.');
+        $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="cataloguer"]')->length, 'The role with code "cataloguer" should exist.');
     }
 
     public function testUIAccess()
@@ -55,5 +56,10 @@ class ProfileACLTest extends AbstractProfileTest
             $role_code = $role->getAttribute('code');
             $this->assertEquals(1, $this->xpath->query("/profile/logins/login[@user_name='$role_code']")->length, "An example user for the role `$role_code` should exist");
         }
+    }
+
+    public function testCataloguerPermissions()
+    {
+        $this->assertEquals(56, $this->xpath->query('/profile/roles/role[@code="cataloguer"]/actions/action')->length, 'The number of actions in the cataloguer role must be equal.');
     }
 }
