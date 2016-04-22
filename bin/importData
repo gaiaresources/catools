@@ -10,7 +10,7 @@ function sqltransform() {
     sqlContent=`cat sql/transformations/"$1"`
     echo "Running migration $1"
     # execute the sql in a transaction
-    echo "BEGIN; ${sqlContent} COMMIT;"|mysql -u"${sourceUserName}" -p"${sourcePassword}" -h"${sourceHostname}" "${sourceDatabase}"
+    echo "BEGIN; ${sqlContent} COMMIT;"|mysql --local-infile=1 -u"${sourceUserName}" -p"${sourcePassword}" -h"${sourceHostname}" "${sourceDatabase}"
 }
 function refreshData() {
     echo "No data transformation set for this import">&2
