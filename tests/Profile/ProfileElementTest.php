@@ -7,8 +7,8 @@ class ProfileElementTest extends AbstractProfileTest
 {
     public function testListAttributesHaveLists()
     {
-        $list_elements = $this->xpath->query('/profile/elementSets/metadataElement[@datatype="List"]');
-        $this->assertEquals(20, $list_elements->length, 'Number of list attributes should match.');
+        $list_elements = $this->xpath->query('//metadataElement[@datatype="List"]');
+        $this->assertEquals(24, $list_elements->length, 'Number of list attributes should match.');
         /** @var DOMElement $list_element */
         foreach ($list_elements as $list_element) {
             $list_code = $list_element->getAttribute('list');
@@ -85,6 +85,31 @@ LIST_XML
         foreach($checkbox_settings as $checkbox_setting){
             $metadata_element = $checkbox_setting->parentNode->parentNode;
             $this->assertContains($metadata_element->getAttribute('list'), array('YesNoDefaultNo','YesNoDefaultYes'), "All checkbox fields should be bound to one of the YesNo lists. Element: `{$metadata_element->getAttribute('code')}`` List: `{$metadata_element->getAttribute('list')}``" );
+        }
+    }
+
+    public function testListElementsWithNullOptionTextDoNotRequireValue()
+    {
+        $optional_list_settings = $this->xpath->query('//metadataElement[@datatype="List"]/settings/setting[@name="nullOptionText"]');
+        $this->assertGreaterThan(0, $optional_list_settings->length, 'You need to have at least one element with nullOptionText set.');
+        /** @var DOMElement $optional_list_setting */
+        foreach($optional_list_settings as $optional_list_setting){
+            $metadata_element = $optional_list_setting->parentNode->parentNode;
+            $this->assertEquals(1, $this->xpath->query($metadata_element->getNodePath() . '/settings/setting[@name="requireValue" and text() = 0]')->length,
+                'The element `' . $metadata_element->getAttribute('code') . '` has `nullOptionText` set and therefore should have a setting of
+                <setting name="requireValue">0</setting>');
+        }
+    }
+    public function testListElementsWhichDoNotRequireValueHaveNullOptionTextSet()
+    {
+        $optional_list_settings = $this->xpath->query('//metadataElement[@datatype="List"]/settings/setting[@name="requireValue" and text() = 0]');
+        $this->assertGreaterThan(0, $optional_list_settings->length, 'You need to have at least one optional element in your profile');
+        /** @var DOMElement $optional_list_setting */
+        foreach($optional_list_settings as $optional_list_setting){
+            $metadata_element = $optional_list_setting->parentNode->parentNode;
+            $this->assertEquals(1, $this->xpath->query($metadata_element->getNodePath() . '/settings/setting[@name="nullOptionText"]')->length,
+                'The element `' . $metadata_element->getAttribute('code') . '` has `requireValue ` set to `0` and therefore should have a setting of
+                <setting name="nullOptionText">Not Set</setting>');
         }
     }
 
