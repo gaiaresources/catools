@@ -8,7 +8,7 @@ class ProfileElementTest extends AbstractProfileTest
     public function testListAttributesHaveLists()
     {
         $list_elements = $this->xpath->query('//metadataElement[@datatype="List"]');
-        $this->assertEquals(23, $list_elements->length, 'Number of list attributes should match.');
+        $this->assertEquals(22, $list_elements->length, 'Number of list attributes should match.');
         /** @var DOMElement $list_element */
         foreach ($list_elements as $list_element) {
             $list_code = $list_element->getAttribute('list');
