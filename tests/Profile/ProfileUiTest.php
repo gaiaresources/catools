@@ -125,4 +125,20 @@ class ProfileUiTest extends AbstractProfileTest
         }
         $this->assertGreaterThan(1, $attribute_count, 'At least one restriction should exist');
     }
+
+    public function testDonorRestrictions(){
+        $bundles = $this->xpath->query('//userInterface[@type="ca_objects"]//placement/bundle[text() = "ca_entities"]');
+        $this->assertEquals(3, $bundles->length, 'Correct number of donor placements.');
+        /** @var DOMElement $bundle */
+        foreach($bundles as $bundle){
+            $placement = $bundle->parentNode->getNodePath();
+            $path = $placement . '/settings/setting[@name="minRelationshipsPerRow"]';
+            $this->assertEquals(1, $this->xpath->query($path)->length, "Expected to find an element at $path");
+            $this->assertEquals("0", $this->xpath->query($path)->item(0)->textContent, "Incorrect value for restriction at $path" );
+
+            $path = $placement . '/settings/setting[@name="maxRelationshipsPerRow"]';
+            $this->assertEquals(1, $this->xpath->query($path)->length, "Expected to find an element at $path");
+            $this->assertEquals("255", $this->xpath->query($path)->item(0)->textContent, "Incorrect value for restriction at $path" );
+        }
+    }
 }
