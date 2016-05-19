@@ -51,7 +51,7 @@ class ProfileUiTest extends AbstractProfileTest
     {
         $restrictions_count = 0;
         /** @var DOMElement $relation_restriction */
-        foreach ($this->xpath->query("/profile/userInterfaces/userInterface/screens/screen/bundlePlacements/placement/settings/setting[@name='restrict_to_type']") as $relation_restriction) {
+        foreach ($this->xpath->query("/profile/userInterfaces/userInterface/screens/screen/bundlePlacements/placement/settings/setting[@name='restrict_to_types']") as $relation_restriction) {
             /** @var DOMElement $ui */
             $ui = $this->xpath->query('ancestor::userInterface[@type]', $relation_restriction)->item(0);
             $restrictions_count++;
@@ -59,6 +59,7 @@ class ProfileUiTest extends AbstractProfileTest
             $this->typeExistsForTable($relation_restriction->textContent, $bundle->textContent, $ui->getAttribute('code') . '(' . $relation_restriction->getNodePath() . ')');
         }
         $this->assertGreaterThan(0, $restrictions_count, 'At least one restriction should exist');
+        $this->assertEquals(0, $this->xpath->query("/profile/userInterfaces/userInterface/screens/screen/bundlePlacements/placement/settings/setting[@name='restrict_to_type']")->length, 'Always use restrict_to_types rather than restrict_to_type for bundle relationship restrictions.');
     }
 
     public function testAttributeExistsForAttributeBundles()
