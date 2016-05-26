@@ -17,12 +17,13 @@ class ProfileACLTest extends AbstractProfileTest
     public function testProfileContainsRoles()
     {
         $xpath = $this->xpath;
-        $this->assertEquals(5, $xpath->query('/profile/roles/role')->length, 'The number of roles should match');
+        $this->assertEquals(6, $xpath->query('/profile/roles/role')->length, 'The number of roles should match');
         $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="museum"]')->length, 'The role with code "museum" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="library"]')->length, 'The role with code "library" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="photograph"]')->length, 'The role with code "photograph" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="memorial"]')->length, 'The role with code "memorial" should exist.');
         $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="cataloguer"]')->length, 'The role with code "cataloguer" should exist.');
+        $this->assertEquals(1, $xpath->query('/profile/roles/role[@code="ws_agent"]')->length, 'The role with code "ws_agent" should exist.');
     }
 
     public function testUIAccess()
@@ -66,7 +67,11 @@ class ProfileACLTest extends AbstractProfileTest
         /** @var \DOMElement $role */
         foreach($this->xpath->query('/profile/roles/role') as $role){
             $role_code = $role->getAttribute('code');
-            $this->assertEquals(1, $this->xpath->query("/profile/logins/login[@user_name='$role_code']")->length, "An example user for the role `$role_code` should exist");
+            if ($role_code === 'ws_agent') {
+                $this->assertEquals(1, $this->xpath->query("/profile/logins/login[@user_name='research-frontend']")->length, "A user with the username `research-frontend` role `$role_code` should exist");
+            } else {
+                $this->assertEquals(1, $this->xpath->query("/profile/logins/login[@user_name='$role_code']")->length, "An example user for the role `$role_code` should exist");
+            }
         }
     }
 
