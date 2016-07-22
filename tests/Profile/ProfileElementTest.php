@@ -113,6 +113,21 @@ LIST_XML
         }
     }
 
+    public function testListElementsHaveRequireValueSet()
+    {
+        $list_elements = $this->xpath->query('//metadataElement[@datatype="List" and @list != "YesNoDefaultNo" and @list != "YesNoDefaultYes"]');
+        /** @var DOMElement $list_element */
+        foreach($list_elements as $list_element){
+            $this->assertEquals(1, $this->xpath->query($list_element->getNodePath() . '/settings/setting[@name="render"]')->length,
+                'The element `' . $list_element->getAttribute('code') . '` has no render set.');
+            if ($this->xpath->query($list_element->getNodePath() . '/settings/setting[@name="render" and text() !="checklist"]')->length){
+                $this->assertEquals(1, $this->xpath->query($list_element->getNodePath() . '/settings/setting[@name="requireValue"]')->length,
+                    'The element `' . $list_element->getAttribute('code') . '` has no requireValue set.');
+            }
+
+        }
+    }
+
     public function testYesNoListsUseCheckboxes()
     {
         $yes_no_list_elements = $this->xpath->query('//metadataElement[@datatype="List" and (@list = "YesNoDefaultNo" or @list = "YesNoDefaultYes")]');
