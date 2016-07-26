@@ -19,6 +19,8 @@ abstract class AbstractProfileTest extends PHPUnit_Framework_TestCase
         $this->profile = new DOMDocument();
         $this->profile->load("$basePath/profile/rwahs.xml");
         $this->xpath = new DOMXPath($this->profile);
+        $this->xpath->registerNamespace('php', 'http://php.net/xpath');
+        $this->xpath->registerPhpFunctions('preg_match');
     }
 
     /**
