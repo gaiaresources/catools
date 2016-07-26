@@ -77,6 +77,7 @@ class ProfileACLTest extends AbstractProfileTest
 
     public function testCataloguerPermissions()
     {
-        $this->assertEquals(56, $this->xpath->query('/profile/roles/role[@code="cataloguer"]/actions/action')->length, 'The cataloguer role should have the correct number of action permissions.');
+        $this->assertEquals(39, $this->xpath->query('/profile/roles/role[@code="cataloguer"]/actions/action')->length, 'The cataloguer role should have the correct number of action permissions.');
+        $this->assertEquals(0, $this->xpath->query('/profile/roles/role[@code="cataloguer"]/actions/action[php:functionString("preg_match", "/_delete_/", text()) > 0]')->length, 'The cataloguer role should not be able to delete anything.');
     }
 }
