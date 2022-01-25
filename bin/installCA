@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -x
+set -e
+set -u
+./bin/deploy
+./bin/caUtils install -n rwahs --admin-email=foo@gaiaresources.com.au --overwrite
+./bin/caUtils reset-password --user administrator --password password
+#pushd prov-data-migration
+#composer install
+#popd
+#pushd prov-ca-profile
+#composer install
+#vendor/bin/phinx seed:run
+#vendor/bin/phinx migrate
+#popd
+#loadMappings

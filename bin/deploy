@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -x
+set -e
+set -u
+ROOT=$APP_ROOT
+ln -sf $ROOT/setup.php $COLLECTIVEACCESS_HOME/
+ln -sf $ROOT/rwahs-profile/profile/base.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base.xml
+ln -sf $ROOT/rwahs-profile/profile/base_en_AU.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base_en_AU.xml
+ln -sf $ROOT/rwahs-profile/profile/rwahs.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/rwahs.xml
+ln -sf $COLLECTIVEACCESS_HOME/support/bin/caUtils $ROOT/bin/
