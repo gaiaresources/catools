@@ -1,0 +1,40 @@
+#!/usr/bin/env php
+<?php
+
+use Symfony\Component\Process\Process;
+require_once 'vendor/autoload.php';
+require_once getenv('COLLECTIVEACCESS_HOME') . '/setup.php';
+/**
+ * @return bool
+ */
+function isInstalled(): bool
+{
+    $ca_tables = \Datamodel::getTableNames();
+    $db = new Db();
+    $qr = $db->query("SHOW TABLES");
+
+    while ($qr->nextRow()) {
+        $table = $qr->getFieldAtIndex(0);
+        if (in_array($table, $ca_tables)) {
+            return true;
+        }
+    }
+    return false;
+}
+$profile = getenv("PROFILE");
+$email = getenv("ADMIN_EMAIL");
+$password = getenv("ADMIN_PASSWORD");
+if (isInstalled()){
+    $p = Process::fromShellCommandline('caUtils update-database-schema');
+    $p->setInput('yes');
+} else {
+    $p = Process::fromShellCommandline("caUtils install --profile-name $profile --admin-email=$email&&caUtils reset-password  --user administrator --password \"$password\"");
+}
+$p->setTimeout(null);
+$p->mustRun(function ($type, $buffer) {
+    if (Process::ERR === $type) {
+        error_log($buffer);
+    } else {
+        echo $buffer;
+    }
+});

@@ -2,11 +2,26 @@
 set -x
 set -e
 set -u
-ROOT=$APP_ROOT
-ln -sf $ROOT/setup.php $COLLECTIVEACCESS_HOME/
-ln -sf $ROOT/installation-profile/profile/base.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base.xml
-ln -sf $ROOT/installation-profile/profile/base_en_AU.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base_en_AU.xml
-ln -sf $ROOT/installation-profile/profile/rwahs.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/rwahs.xml
-ln -sf $COLLECTIVEACCESS_HOME/support/bin/caUtils $ROOT/bin/
-ln -sf $ROOT/plugins/rwahsDataImporter $COLLECTIVEACCESS_HOME/app/plugins/
-ln -sf $ROOT/plugins/rwahsNavigation $COLLECTIVEACCESS_HOME/app/plugins/
+ln -sf vendor/collectiveaccess/providence $COLLECTIVEACCESS_HOME
+ln -sf $COLLECTIVEACCESS_HOME/support/bin/caUtils $APP_ROOT/bin/
+ln -sf $APP_ROOT/setup.php $COLLECTIVEACCESS_HOME/
+ln -sf $APP_ROOT/installation-profile/profile/base.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base.xml
+ln -sf $APP_ROOT/installation-profile/profile/base_en_AU.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base_en_AU.xml
+ln -sf $APP_ROOT/installation-profile/profile/rwahs.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/rwahs.xml
+ln -sf $APP_ROOT/plugins/rwahsDataImporter $COLLECTIVEACCESS_HOME/app/plugins/
+ln -sf $APP_ROOT/plugins/rwahsNavigation $COLLECTIVEACCESS_HOME/app/plugins/
+mkdir -p media/collectiveaccess
+mkdir -p import
+mkdir -p cert
+mkdir -p data
+mkdir -p log
+pushd $COLLECTIVEACCESS_HOME
+composer install
+rm -rf media
+rm -rf import
+rm -rf app/log
+ln -sf $APP_ROOT/media .
+ln -sf $APP_ROOT/import .
+ln -sf $APP_ROOT/log app/
+popd
+
