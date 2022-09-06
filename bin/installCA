@@ -2,15 +2,6 @@
 set -x
 set -e
 set -u
-./bin/deploy
-./bin/caUtils install --profile-name rwahs --admin-email=foo@gaiaresources.com.au --overwrite
-./bin/caUtils reset-password --user administrator --password password
-#pushd prov-data-migration
-#composer install
-#popd
-#pushd prov-ca-profile
-#composer install
-#vendor/bin/phinx seed:run
-#vendor/bin/phinx migrate
-#popd
-#loadMappings
+wait-for $DB_HOST:3307
+./bin/caUtils install --profile-name "$PROFILE" --admin-email="$ADMIN_EMAIL" --overwrite
+./bin/caUtils reset-password --user administrator --password "$ADMIN_PASSWORD"
