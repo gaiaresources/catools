@@ -8,3 +8,5 @@ ln -sf $ROOT/installation-profile/profile/base.xml $COLLECTIVEACCESS_HOME/instal
 ln -sf $ROOT/installation-profile/profile/base_en_AU.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base_en_AU.xml
 ln -sf $ROOT/installation-profile/profile/rwahs.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/rwahs.xml
 ln -sf $COLLECTIVEACCESS_HOME/support/bin/caUtils $ROOT/bin/
+ln -sf $ROOT/plugins/rwahsDataImporter $COLLECTIVEACCESS_HOME/app/plugins/
+ln -sf $ROOT/plugins/rwahsNavigation $COLLECTIVEACCESS_HOME/app/plugins/
