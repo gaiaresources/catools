@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+set -u
+FILE=${1:-$(find backups/ -name '*.media.zip'|sort -r|head -n1)}
+echo "Restoring backup media file $FILE"
+unzip -o "$FILE" -d "$COLLECTIVEACCESS_HOME"

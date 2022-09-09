@@ -26,7 +26,7 @@ $email = getenv("ADMIN_EMAIL");
 $password = getenv("ADMIN_PASSWORD");
 if (isInstalled()){
     $p = Process::fromShellCommandline('caUtils update-database-schema');
-    $p->setInput('yes');
+    $p->setInput('y');
 } else {
     $p = Process::fromShellCommandline("caUtils install --profile-name $profile --admin-email=$email&&caUtils reset-password  --user administrator --password \"$password\"");
 }

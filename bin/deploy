@@ -3,7 +3,6 @@ set -x
 set -e
 set -u
 ln -sf vendor/collectiveaccess/providence $COLLECTIVEACCESS_HOME
-ln -sf $COLLECTIVEACCESS_HOME/support/bin/caUtils $APP_ROOT/bin/
 ln -sf $APP_ROOT/setup.php $COLLECTIVEACCESS_HOME/
 ln -sf $APP_ROOT/installation-profile/profile/base.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base.xml
 ln -sf $APP_ROOT/installation-profile/profile/base_en_AU.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base_en_AU.xml
@@ -12,9 +11,9 @@ ln -sf $APP_ROOT/plugins/rwahsDataImporter $COLLECTIVEACCESS_HOME/app/plugins/
 ln -sf $APP_ROOT/plugins/rwahsNavigation $COLLECTIVEACCESS_HOME/app/plugins/
 mkdir -p media/collectiveaccess
 mkdir -p import
-mkdir -p cert
 mkdir -p data
 mkdir -p log
+mkdir -p backups
 pushd $COLLECTIVEACCESS_HOME
 composer install
 rm -rf media
