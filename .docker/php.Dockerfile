@@ -61,5 +61,6 @@ USER wodby
 # Install composer dependencies
 COPY bin/deploy ./bin/
 COPY composer.* ./
+WORKDIR $APP_ROOT
 RUN composer install
 COPY . .
