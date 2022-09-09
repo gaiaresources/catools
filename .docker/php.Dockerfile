@@ -62,5 +62,4 @@ USER wodby
 COPY bin/deploy ./bin/
 COPY composer.* ./
 RUN composer install
-WORKDIR $APP_ROOT
 COPY . .
