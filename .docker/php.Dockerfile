@@ -1,6 +1,15 @@
 ARG PHP_TAG
 FROM wodby/php:$PHP_TAG as php
+ARG WODBY_USER_ID=1000
+ARG WODBY_GROUP_ID=1000
+
 USER root
+ENV APP_ROOT="/var/www/html" \
+    COLLECTIVEACCESS_HOME="/var/www/html/providence"
+RUN mkdir -p /home/wodby $APP_ROOT
+RUN usermod -u $WODBY_USER_ID wodby
+RUN groupmod -g $WODBY_GROUP_ID wodby
+RUN chown -R $WODBY_USER_ID:$WODBY_GROUP_ID /home/wodby $APP_ROOT
 # ncurses used for caUtils command
 RUN apk add --update --no-cache \
     ncurses \
@@ -45,8 +54,6 @@ RUN apk add --update --no-cache \
     zip && \
     composer self-update
 
-ENV APP_ROOT="/var/www/html" \
-    COLLECTIVEACCESS_HOME="/var/www/html/providence"
 # Install gmagick extension for better and faster media processing.
 RUN yes|pecl -D with-gmagick=autodetect install -s channel://pecl.php.net/gmagick-2.0.6RC1 && \
     docker-php-ext-enable gmagick && \
