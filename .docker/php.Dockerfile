@@ -69,5 +69,6 @@ USER wodby
 COPY bin/deploy ./bin/
 COPY composer.* ./
 WORKDIR $APP_ROOT
+ENV COMPOSER_PROCESS_TIMEOUT=1200
 RUN composer install
 COPY . .
