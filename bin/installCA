@@ -2,6 +2,6 @@
 set -x
 set -e
 set -u
-wait-for $DB_HOST:3307
+wait-for "$DB_HOST:$DB_PORT"
 ./bin/caUtils install --profile-name "$PROFILE" --admin-email="$ADMIN_EMAIL" --overwrite
 ./bin/caUtils reset-password --user administrator --password "$ADMIN_PASSWORD"

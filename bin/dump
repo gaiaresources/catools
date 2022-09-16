@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+TS=$(date -Im)
+mkdir -p backups
+SUFFIX=$1
+if [ $# -eq 0 ]
+    then
+        echo "No arguments supplied - using default file name"
+        FILE_PREFIX="$DB_NAME-${TS}"
+    elif [ $# -eq 1 ]
+    then
+        echo "Argument supplied. Overriding default file name"
+        FILE_PREFIX=$DB_NAME-$1
+    else
+        echo "More than one argument supplied. Exiting"
+        exit 1
+fi
+DB_FILENAME="backups/${FILE_PREFIX}.sql.gz"
+mysqldump -u${DB_USER} -p${DB_PASSWORD} -h${DB_HOST} ${DB_NAME} |gzip > "$DB_FILENAME"
+echo "Database backed up to $DB_FILENAME"
+MEDIA_FILENAME="backups/${FILE_PREFIX}.media.zip"
+zip -rq "$MEDIA_FILENAME" media
+echo "Media backed up to $MEDIA_FILENAME"

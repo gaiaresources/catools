@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+set -u
+## The backup may be older than our current database so we need to drop our current db first
+dropDb
+FILE=${1:-$(find backups/ -name '*.sql.gz'|sort -r|head -n1)}
+echo "Restoring backup $FILE"
+pv $FILE|gunzip| mysql -u${DB_USER} -p${DB_PASSWORD} -h${DB_HOST} ${DB_NAME}
+caUtils clear-caches
