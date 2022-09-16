@@ -9,7 +9,7 @@ ENV APP_ROOT="/var/www/html" \
 RUN mkdir -p /home/wodby $APP_ROOT
 RUN usermod -u $WODBY_USER_ID wodby
 RUN groupmod -g $WODBY_GROUP_ID wodby
-RUN chown -R $WODBY_USER_ID:$WODBY_GROUP_ID /home/wodby $APP_ROOT
+RUN find / -xdev -uid 1000 -exec chown wodby:wodby {} \;
 # ncurses used for caUtils command
 RUN apk add --update --no-cache \
     ncurses \
