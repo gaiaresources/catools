@@ -7,7 +7,6 @@ ln -sf $APP_ROOT/setup.php $COLLECTIVEACCESS_HOME/
 ln -sf $APP_ROOT/installation-profile/profile/base.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base.xml
 ln -sf $APP_ROOT/installation-profile/profile/base_en_AU.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base_en_AU.xml
 ln -sf $APP_ROOT/installation-profile/profile/rwahs.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/rwahs.xml
-ln -sf $APP_ROOT/plugins/rwahsDataImporter $COLLECTIVEACCESS_HOME/app/plugins/
 ln -sf $APP_ROOT/plugins/rwahsNavigation $COLLECTIVEACCESS_HOME/app/plugins/
 ln -sf $APP_ROOT/themes/* $COLLECTIVEACCESS_HOME/themes/
 ln -sf $APP_ROOT/printTemplates/labels/* $COLLECTIVEACCESS_HOME/app/printTemplates/labels/local
