@@ -22,10 +22,8 @@ class ProfileValidationTest extends AbstractProfileTest
     }
     public function testMiniProfilesConformToSchema()
     {
-        $basePath = dirname(dirname(dirname(__DIR__))) . "/src/db/migrations";
+        $basePath = dirname(__DIR__, 3) . "/src/db/migrations";
         $allFiles = glob($basePath . '/*.xml');
-        fwrite(STDERR, print_r($basePath, TRUE));
-        fwrite(STDERR, print_r($allFiles, TRUE));
         // So that we can capture file name warnings we replace the error handler.
         $maxConcurrent = 4;
         foreach (array_chunk($allFiles, $maxConcurrent) as $files) {
