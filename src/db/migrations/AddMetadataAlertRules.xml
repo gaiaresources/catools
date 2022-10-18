@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/collectiveaccess/providence/develop/install/profiles/xml/profile.xsd" useForConfiguration="1" infoUrl="">
+  <profileName>AddMetadataAlertRules</profileName>
+  <profileDescription>Royal Western Australian Historical Society profile</profileDescription>
+  <locales>
+    <locale lang="en" country="AU">English (Australian)</locale>
+  </locales>
+  <lists/>
+  <elementSets/>
+  <userInterfaces>
+    <userInterface code="metadata_alert_rule_config_ui" type="ca_metadata_alert_rules">
+      <labels>
+        <label locale="en_AU">
+          <name>Metadata alert rule editor</name>
+        </label>
+      </labels>
+      <screens>
+        <screen idno="basic_info" default="1">
+          <labels>
+            <label locale="en_AU">
+              <name>Basic info</name>
+            </label>
+          </labels>
+          <bundlePlacements>
+            <placement code="preferred_labels">
+              <bundle>preferred_labels</bundle>
+              <settings>
+                <setting name="readonly"/>
+                <setting name="expand_collapse_value">bubbles</setting>
+                <setting name="expand_collapse_no_value">bubbles</setting>
+                <setting name="usewysiwygeditor"/>
+              </settings>
+            </placement>
+            <placement code="ca_metadata_alert_triggers">
+              <bundle>ca_metadata_alert_triggers</bundle>
+              <settings>
+                <setting name="readonly"/>
+                <setting name="expand_collapse_value">bubbles</setting>
+                <setting name="expand_collapse_no_value">bubbles</setting>
+              </settings>
+            </placement>
+            <placement code="ca_users">
+              <bundle>ca_users</bundle>
+              <settings>
+                <setting name="readonly"/>
+                <setting name="expand_collapse_value">bubbles</setting>
+                <setting name="expand_collapse_no_value">bubbles</setting>
+              </settings>
+            </placement>
+            <placement code="ca_user_groups">
+              <bundle>ca_user_groups</bundle>
+              <settings>
+                <setting name="readonly"/>
+                <setting name="expand_collapse_value">bubbles</setting>
+                <setting name="expand_collapse_no_value">bubbles</setting>
+              </settings>
+            </placement>
+            <placement code="ca_metadata_alert_rule_type_re">
+              <bundle>ca_metadata_alert_rule_type_restrictions</bundle>
+              <settings>
+                <setting name="readonly"/>
+                <setting name="expand_collapse_value">bubbles</setting>
+                <setting name="expand_collapse_no_value">bubbles</setting>
+              </settings>
+            </placement>
+            <placement code="code">
+              <bundle>code</bundle>
+              <settings>
+                <setting name="readonly"/>
+                <setting name="expand_collapse_value">bubbles</setting>
+                <setting name="expand_collapse_no_value">bubbles</setting>
+                <setting name="usewysiwygeditor"/>
+              </settings>
+            </placement>
+          </bundlePlacements>
+        </screen>
+      </screens>
+    </userInterface>
+  </userInterfaces>
+  <relationshipTypes/>
+  <roles/>
+  <groups/>
+  <displays/>
+  <searchForms/>
+</profile>
