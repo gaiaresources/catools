@@ -23,15 +23,9 @@ abstract class CollectiveaccessMigration extends AbstractMigration
     public function saveSettings(BaseModel $screenOrDisplay, BaseModel $placement, array $settings): void
     {
         // Reload screen/display without using the cache
-        $screenOrDisplay->load($screenOrDisplay->getPrimaryKey(), false);
-        $bundleName = $placement->get('bundle_name');
-        $availableBundles = $screenOrDisplay->getAvailableBundles();
-        $bundleSettings = $availableBundles[$bundleName]['settings'] ?? [];
-        // Reload placement without using the cache
-        $placement->load($placement->getPrimaryKey(), false);
-        // Required in order to be able to save new settings against the placement
-        $placement->setSettingDefinitionsForPlacement($bundleSettings);
+        $this->loadSettingDefinitions($screenOrDisplay, $placement);
         $this->setAndSaveSettings($settings, $placement, $screenOrDisplay);
+        $placement->update();
     }
 
     /**
@@ -51,7 +45,7 @@ abstract class CollectiveaccessMigration extends AbstractMigration
                 $savedValue = $savedSettings[$setting] ?? null;
                 if ($savedSettings === false) {
                     $errors[] = sprintf("Failed to save setting %s with value %s", $setting, json_encode($value));
-                } elseif ($savedValue !== $value) {
+                } elseif ($savedValue != $value) {
                     $errors[] = sprintf("Setting %s does not have the same set value (%s) as we have just tried to set (%s)", $setting, json_encode($savedValue), $value);
                 }
             }
@@ -62,6 +56,23 @@ abstract class CollectiveaccessMigration extends AbstractMigration
         if ($placement->numErrors()) {
             throw new Exception('Failed to save placement with the following error messages' . json_encode($placement->getErrorDescriptions()));
         }
+    }
+
+    /**
+     * @param $screenOrDisplay
+     * @param $placement
+     * @return void
+     */
+    public function loadSettingDefinitions($screenOrDisplay, $placement): void
+    {
+        $screenOrDisplay->load($screenOrDisplay->getPrimaryKey(), false);
+        $bundleName = $placement->get('bundle_name');
+        $availableBundles = $screenOrDisplay->getAvailableBundles();
+        $bundleSettings = $availableBundles[$bundleName]['settings'] ?? [];
+        // Reload placement without using the cache
+        $placement->load($placement->getPrimaryKey(), false);
+        // Required in order to be able to save new settings against the placement
+        $placement->setSettingDefinitionsForPlacement($bundleSettings);
     }
 
     /**
