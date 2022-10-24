@@ -8,6 +8,7 @@ use ca_editor_ui_bundle_placements;
 use ca_editor_ui_screens;
 use Exception;
 use Phinx\Migration\AbstractMigration;
+use Symfony\Component\Process\Process;
 
 abstract class CollectiveaccessMigration extends AbstractMigration
 {
@@ -60,6 +61,34 @@ abstract class CollectiveaccessMigration extends AbstractMigration
         }
         if ($placement->numErrors()) {
             throw new Exception('Failed to save placement with the following error messages' . json_encode($placement->getErrorDescriptions()));
+        }
+    }
+
+    /**
+     * Run a cli command in a process and throw an exception on any captured errors.
+     * @param string $command
+     * @param int $timeout
+     * @throws Exception
+     */
+    public function runCommand(string $command, int $timeout = 0): void
+    {
+        $process = Process::fromShellCommandline($command, __CA_BASE_DIR__);
+        $process->setTimeout($timeout);
+        $errored = false;
+        $errors = [];
+        // This callback enables the command's output to be passed through.
+        $process->mustRun(function ($type, $buffer) use ($errored, &$errors) {
+            $errored |= preg_match('/\d+\s+errors?\s+occurred/', $buffer);
+            $errored |= preg_match('/Invalid options specified/', $buffer);
+            if (Process::ERR === $type || $errored) {
+                $this->getOutput()->writeln('<error>ERROR</error> ' . $buffer);
+                $errors[] = $buffer;
+            } else {
+                $this->getOutput()->writeln($buffer);
+            }
+        });
+        if ($errors) {
+            throw new Exception("Migration failed:\n\t" . join("\n\t", $errors));
         }
     }
 }
