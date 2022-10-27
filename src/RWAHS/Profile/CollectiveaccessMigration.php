@@ -8,6 +8,7 @@ use ca_editor_ui_bundle_placements;
 use ca_editor_ui_screens;
 use Exception;
 use Phinx\Migration\AbstractMigration;
+use Symfony\Component\Process\Process;
 
 abstract class CollectiveaccessMigration extends AbstractMigration
 {
@@ -22,15 +23,9 @@ abstract class CollectiveaccessMigration extends AbstractMigration
     public function saveSettings(BaseModel $screenOrDisplay, BaseModel $placement, array $settings): void
     {
         // Reload screen/display without using the cache
-        $screenOrDisplay->load($screenOrDisplay->getPrimaryKey(), false);
-        $bundleName = $placement->get('bundle_name');
-        $availableBundles = $screenOrDisplay->getAvailableBundles();
-        $bundleSettings = $availableBundles[$bundleName]['settings'] ?? [];
-        // Reload placement without using the cache
-        $placement->load($placement->getPrimaryKey(), false);
-        // Required in order to be able to save new settings against the placement
-        $placement->setSettingDefinitionsForPlacement($bundleSettings);
+        $this->loadSettingDefinitions($screenOrDisplay, $placement);
         $this->setAndSaveSettings($settings, $placement, $screenOrDisplay);
+        $placement->update();
     }
 
     /**
@@ -50,7 +45,7 @@ abstract class CollectiveaccessMigration extends AbstractMigration
                 $savedValue = $savedSettings[$setting] ?? null;
                 if ($savedSettings === false) {
                     $errors[] = sprintf("Failed to save setting %s with value %s", $setting, json_encode($value));
-                } elseif ($savedValue !== $value) {
+                } elseif ($savedValue != $value) {
                     $errors[] = sprintf("Setting %s does not have the same set value (%s) as we have just tried to set (%s)", $setting, json_encode($savedValue), $value);
                 }
             }
@@ -60,6 +55,51 @@ abstract class CollectiveaccessMigration extends AbstractMigration
         }
         if ($placement->numErrors()) {
             throw new Exception('Failed to save placement with the following error messages' . json_encode($placement->getErrorDescriptions()));
+        }
+    }
+
+    /**
+     * @param $screenOrDisplay
+     * @param $placement
+     * @return void
+     */
+    public function loadSettingDefinitions($screenOrDisplay, $placement): void
+    {
+        $screenOrDisplay->load($screenOrDisplay->getPrimaryKey(), false);
+        $bundleName = $placement->get('bundle_name');
+        $availableBundles = $screenOrDisplay->getAvailableBundles();
+        $bundleSettings = $availableBundles[$bundleName]['settings'] ?? [];
+        // Reload placement without using the cache
+        $placement->load($placement->getPrimaryKey(), false);
+        // Required in order to be able to save new settings against the placement
+        $placement->setSettingDefinitionsForPlacement($bundleSettings);
+    }
+
+    /**
+     * Run a cli command in a process and throw an exception on any captured errors.
+     * @param string $command
+     * @param int $timeout
+     * @throws Exception
+     */
+    public function runCommand(string $command, int $timeout = 0): void
+    {
+        $process = Process::fromShellCommandline($command, __CA_BASE_DIR__);
+        $process->setTimeout($timeout);
+        $errored = false;
+        $errors = [];
+        // This callback enables the command's output to be passed through.
+        $process->mustRun(function ($type, $buffer) use ($errored, &$errors) {
+            $errored |= preg_match('/\d+\s+errors?\s+occurred/', $buffer);
+            $errored |= preg_match('/Invalid options specified/', $buffer);
+            if (Process::ERR === $type || $errored) {
+                $this->getOutput()->writeln('<error>ERROR</error> ' . $buffer);
+                $errors[] = $buffer;
+            } else {
+                $this->getOutput()->writeln($buffer);
+            }
+        });
+        if ($errors) {
+            throw new Exception("Migration failed:\n\t" . join("\n\t", $errors));
         }
     }
 }

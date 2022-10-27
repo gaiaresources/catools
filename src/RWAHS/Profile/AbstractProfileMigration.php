@@ -16,10 +16,9 @@ use CompositeCache;
 use Datamodel;
 use Db;
 use Exception;
-use Phinx\Migration\AbstractMigration;
 use Symfony\Component\Process\Process;
 
-abstract class AbstractProfileMigration extends AbstractMigration
+abstract class AbstractProfileMigration extends CollectiveaccessMigration
 {
     /**
      * @throws Exception
@@ -44,24 +43,7 @@ abstract class AbstractProfileMigration extends AbstractMigration
         $sourceFilename = $this->getProfileFilename($profile);
         copy($sourceFilename, $filename);
         $command = "support/bin/caUtils update-installation-profile --profile-name $profile";
-        $process = Process::fromShellCommandline($command, __CA_BASE_DIR__);
-        $process->setTimeout(0);
-        $errored = false;
-        $errors = [];
-        // This callback enables the command's output to be passed through.
-        $process->mustRun(function ($type, $buffer) use ($errored, $errors) {
-            $errored |= preg_match('/\d+\s+errors?\s+occurred/', $buffer);
-            $errored |= preg_match('/Invalid options specified/', $buffer);
-            if (Process::ERR === $type || $errored) {
-                $this->getOutput()->writeln('<error>ERROR</error> ' . $buffer);
-                $errors[] = $buffer;
-            } else {
-                $this->getOutput()->writeln($buffer);
-            }
-        });
-        if ($errors) {
-            throw new Exception("Migration failed:\n\t" . join("\n\t", $errors));
-        }
+        $this->runCommand($command);
         unlink($filename);
         $emptyLocations = ca_storage_locations::find(['idno' => ''], ['returnAs' => 'modelInstances']);
         /** @var ca_storage_locations $emptyLocation */
