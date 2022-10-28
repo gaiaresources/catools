@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+set -u
+set -x
+wait-for $DB_HOST:$DB_PORT
+composer --no-interaction install
+sudo -E LD_PRELOAD=/usr/lib/preloadable_libiconv.so crond -f -d 0

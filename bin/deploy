@@ -26,4 +26,6 @@ ln -sf $APP_ROOT/media .
 ln -sf $APP_ROOT/import .
 ln -sf $APP_ROOT/log app/
 popd
+# Ensure media directories can be read by web server
+find media/collectiveaccess -type d -exec chmod 775 {} \;
 

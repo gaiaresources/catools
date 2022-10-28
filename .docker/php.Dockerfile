@@ -71,4 +71,5 @@ COPY composer.* ./
 WORKDIR $APP_ROOT
 ENV COMPOSER_PROCESS_TIMEOUT=2400
 RUN composer install
+COPY crontab /etc/crontabs/wodby
 COPY . .
