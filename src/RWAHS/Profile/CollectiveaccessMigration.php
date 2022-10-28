@@ -1,17 +1,20 @@
 <?php
 namespace RWAHS\Profile;
 
+use ApplicationException;
 use BaseModel;
 use ca_bundle_display_placements;
 use ca_bundle_displays;
 use ca_editor_ui_bundle_placements;
 use ca_editor_ui_screens;
+use ca_editor_uis;
 use Exception;
 use Phinx\Migration\AbstractMigration;
 use Symfony\Component\Process\Process;
 
 abstract class CollectiveaccessMigration extends AbstractMigration
 {
+    public const INSTANCE_PARAMS = ['returnAs' => 'firstModelInstance'];
 
     /**
      * @param ca_editor_ui_screens|ca_bundle_displays $screenOrDisplay
@@ -34,7 +37,7 @@ abstract class CollectiveaccessMigration extends AbstractMigration
      * @param ca_editor_ui_screens|ca_bundle_displays $screenOrDisplay
      * @throws Exception
      */
-    public function setAndSaveSettings(array $settings, BaseModel $placement, BaseModel $screenOrDisplay)
+    private function setAndSaveSettings(array $settings, BaseModel $placement, BaseModel $screenOrDisplay)
     {
         $errors = [];
         foreach ($settings as $setting => $value) {
@@ -101,5 +104,30 @@ abstract class CollectiveaccessMigration extends AbstractMigration
         if ($errors) {
             throw new Exception("Migration failed:\n\t" . join("\n\t", $errors));
         }
+    }
+
+    /**
+     * @param string $bundleName
+     * @param ca_editor_ui_screens $screen
+     * @param ca_editor_uis $ui
+     * @param null|string $after
+     * @return array|ca_editor_ui_bundle_placements|false|int|mixed|null
+     * @throws ApplicationException
+     */
+    public function ensurePlacement(string $bundleName, ca_editor_ui_screens $screen, ca_editor_uis $ui, $after = null)
+    {
+        $placement = ca_editor_ui_bundle_placements::find(['bundle_name' => $bundleName, 'screen_id' => $screen->getPrimaryKey()], self::INSTANCE_PARAMS);
+        if (!$placement) {
+            if ($after) {
+                $placementId = $ui->addPlacementToScreenAfter($screen->getPrimaryKey(), $bundleName, $bundleName, [], $after);
+            } else {
+                $placementId = $ui->addPlacementToScreen($screen->getPrimaryKey(), $bundleName, $bundleName, []);
+            }
+            $placement = new ca_editor_ui_bundle_placements($placementId);
+        } else {
+            $placementId = $placement->getPrimaryKey();
+        }
+        $placement->load($placementId, false);
+        return $placement;
     }
 }
