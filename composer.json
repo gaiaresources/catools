@@ -58,6 +58,19 @@
         "ext-dom": "*",
         "amphp/parallel-functions": "^1.1"
     },
+    "bin": [
+        "bin/deploy",
+        "bin/dropDb",
+        "bin/dump",
+        "bin/installOrUpdate",
+        "bin/installCA",
+        "bin/healthcheck",
+        "bin/restore",
+        "bin/restoreMedia",
+        "bin/startQueue",
+        "bin/startUp",
+        "bin/wait-for"
+    ],
     "scripts": {
         "post-update-cmd": "deploy",
         "post-install-cmd": "deploy"
