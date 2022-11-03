@@ -1,0 +1,65 @@
+{
+    "name": "gaiaresources/catools",
+    "description": "Tools for developing and hosting CollectiveAccess projects.",
+    "minimum-stability": "dev",
+    "type": "library",
+    "license": "MIT",
+    "config": {
+        "github-protocols": ["https"],
+        "discard-changes": true
+    },
+    "autoload": {
+        "psr-4": {
+            "GaiaResources\\CaTools\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Kehan Harman",
+            "email": "kehan.harman@gaiaresources.com.au"
+        },
+        {
+            "name": "Ben New",
+            "email": "ben.new@gaiaresources.com.au"
+        },
+        {
+            "name": "Natasha Madondo",
+            "email": "natasha.madondo@gaiaresources.com.au"
+        },
+        {
+            "name": "Jithendralal Nair",
+            "email": "jithendralal.nair@gaiaresources.com.au"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "collectiveaccess/providence",
+                "version": "dev-develop",
+                "type": "project",
+                "source": {
+                    "url": "https://github.com/collectiveaccess/providence.git",
+                    "type": "git",
+                    "reference": "develop"
+                }
+            }
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "collectiveaccess/providence": "dev-develop",
+        "symfony/process": "^5.0|^6.0",
+        "robmorgan/phinx": "^0.12|^0.13",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "ext-dom": "*",
+        "amphp/parallel-functions": "^1.1"
+    },
+    "scripts": {
+        "post-update-cmd": "deploy",
+        "post-install-cmd": "deploy"
+    }
+}
