@@ -4,14 +4,12 @@ set -e
 set -u
 ln -sf vendor/collectiveaccess/providence $COLLECTIVEACCESS_HOME
 ln -sf $APP_ROOT/setup.php $COLLECTIVEACCESS_HOME/
-ln -sf $APP_ROOT/installation-profile/profile/base.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base.xml
-ln -sf $APP_ROOT/installation-profile/profile/base_en_AU.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/base_en_AU.xml
-ln -sf $APP_ROOT/installation-profile/profile/$PROFILE.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/$PROFILE.xml
-find $APP_ROOT/plugins/* $COLLECTIVEACCESS_HOME/app/plugins/
-ln -sf $APP_ROOT/themes/* $COLLECTIVEACCESS_HOME/themes/
-ln -sf $APP_ROOT/printTemplates/labels/* $COLLECTIVEACCESS_HOME/app/printTemplates/labels/local
-ln -sf $APP_ROOT/printTemplates/summary/* $COLLECTIVEACCESS_HOME/app/printTemplates/summary/local
-ln -sf $APP_ROOT/printTemplates/results/* $COLLECTIVEACCESS_HOME/app/printTemplates/results/local
+[ -d  $APP_ROOT/installation-profile/profile/$PROFILE.xml ] && ln -sf $APP_ROOT/installation-profile/profile/$PROFILE.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/$PROFILE.xml
+[ -d $APP_ROOT/plugins ] && ln -sf $APP_ROOT/plugins/* $COLLECTIVEACCESS_HOME/app/plugins/
+[ -d $APP_ROOT/themes ] && ln -sf $APP_ROOT/themes/* $COLLECTIVEACCESS_HOME/themes/
+[ -d $APP_ROOT/printTemplates/labels ] && ln -sf $APP_ROOT/printTemplates/labels/* $COLLECTIVEACCESS_HOME/app/printTemplates/labels/local
+[ -d $APP_ROOT/printTemplates/summary ] && ln -sf $APP_ROOT/printTemplates/summary/* $COLLECTIVEACCESS_HOME/app/printTemplates/summary/local
+[ -d $APP_ROOT/printTemplates/results ] && ln -sf $APP_ROOT/printTemplates/results/* $COLLECTIVEACCESS_HOME/app/printTemplates/results/local
 mkdir -p media/collectiveaccess
 mkdir -p import
 mkdir -p data
