@@ -67,7 +67,6 @@ USER wodby
 ARG COLLECTIVEACCESS_HOME
 ARG PROFILE
 # Install composer dependencies
-COPY bin/deploy ./bin/
 COPY composer.* ./
 WORKDIR $APP_ROOT
 ENV COMPOSER_PROCESS_TIMEOUT=2400
