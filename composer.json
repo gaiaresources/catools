@@ -33,20 +33,8 @@
     ],
     "repositories": [
         {
-            "type": "package",
-            "bin": [
-                "support/bin/caUtils"
-            ],
-            "package": {
-                "name": "collectiveaccess/providence",
-                "version": "dev-develop",
-                "type": "project",
-                "source": {
-                    "url": "https://github.com/collectiveaccess/providence.git",
-                    "type": "git",
-                    "reference": "develop"
-                }
-            }
+            "type": "vcs",
+            "url": "https://github.com/collectiveaccess/providence"
         }
     ],
     "require": {
