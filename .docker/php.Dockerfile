@@ -4,8 +4,7 @@ ARG WODBY_USER_ID=1000
 ARG WODBY_GROUP_ID=1000
 
 USER root
-ENV APP_ROOT="/var/www/html" \
-    COLLECTIVEACCESS_HOME="/var/www/html/providence"
+ENV APP_ROOT="/var/www/html"
 RUN mkdir -p /home/wodby $APP_ROOT
 RUN usermod -u $WODBY_USER_ID wodby
 RUN groupmod -g $WODBY_GROUP_ID wodby
@@ -65,6 +64,8 @@ RUN yes|pecl -D with-gmagick=autodetect install -s channel://pecl.php.net/gmagic
 COPY --from=aantonw/alpine-wkhtmltopdf-patched-qt /bin/wkhtmltopdf /usr/bin/wkhtmltopdf
 
 USER wodby
+ARG COLLECTIVEACCESS_HOME
+ARG PROFILE
 # Install composer dependencies
 COPY bin/deploy ./bin/
 COPY composer.* ./
