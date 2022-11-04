@@ -10,7 +10,7 @@
     },
     "autoload": {
         "psr-4": {
-            "GaiaResources\\CaTools\\": "src/"
+            "CaTools\\": "src/"
         }
     },
     "authors": [
