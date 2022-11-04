@@ -14,18 +14,15 @@ mkdir -p media/collectiveaccess
 mkdir -p import
 mkdir -p data
 mkdir -p log
-mkdir -p tmp
 mkdir -p backups
 pushd $COLLECTIVEACCESS_HOME
 composer install
 rm -rf media
 rm -rf import
 rm -rf app/log
-rm -rf app/tmp
 ln -sf $APP_ROOT/media .
 ln -sf $APP_ROOT/import .
 ln -sf $APP_ROOT/log app/
-ln -sf $APP_ROOT/tmp app/
 popd
 # Ensure media directories can be read by web server
 find media/collectiveaccess -type d -exec chmod 775 {} \;
