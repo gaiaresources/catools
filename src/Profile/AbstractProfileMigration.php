@@ -3,6 +3,8 @@
 namespace CaTools\Profile;
 
 use Exception;
+use Phinx\Config\Config;
+use Phinx\Migration\Manager;
 
 abstract class AbstractProfileMigration extends CollectiveaccessMigration
 {
@@ -24,9 +26,13 @@ abstract class AbstractProfileMigration extends CollectiveaccessMigration
             return;
         }
 
+        $sourceFilename = $this->getProfileFilename();
         // Profile needs to be in the directory.
         $filename = __CA_BASE_DIR__ . "/install/profiles/xml/$profile.xml";
-        copy($profile, $filename);
+        if (!is_file($sourceFilename)){
+            throw new Exception("Migration file $sourceFilename for profile $profile does not exist");
+        }
+        copy($this->getProfileFilename(), $filename);
         $command = "support/bin/caUtils update-installation-profile --profile-name $profile";
         $this->runCommand($command);
         unlink($filename);
@@ -70,7 +76,7 @@ abstract class AbstractProfileMigration extends CollectiveaccessMigration
     protected function getProfileFilename(): string
     {
         $profile = $this->getProfileName();
-        return dirname(dirname(__DIR__)) . "/db/migrations/$profile.xml";
+        return dirname(__CA_BASE_DIR__) . "/db/migrations/$profile.xml";
     }
 
 }
