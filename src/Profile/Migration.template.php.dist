@@ -1,0 +1,14 @@
+<?php
+
+declare(strict_types=1);
+
+use Catools\Profile\AbstractProfileMigration;
+
+final class $className extends AbstractProfileMigration
+{
+
+    protected function getProfileName()
+    {
+        return str_replace(__NAMESPACE__, '', __CLASS__);
+    }
+}

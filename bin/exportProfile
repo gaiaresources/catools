@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# example usage:
+#   exportProfile '30 minutes ago' Thirty
+set -e
+set -u
+set -x
+OUTDIR=$APP_ROOT
+NAME=$PROFILE_NAME
+TIMESTAMP=''
+DATE=${1:-}
+
+if [ -n "$DATE" ]
+then
+    NAME=${2:-}
+    phinx create --template="$APP_ROOT/vendor/gaiaresources/catools/src/Catools/Profile/Migration.template.php.dist"  $NAME
+    OUTDIR="$OUTDIR/db/migrations"
+    export DATE
+    TIMESTAMP=$(php -r '$d = new DateTime(getenv("DATE")); print $d->getTimestamp();')
+    PROFILE="$NAME"
+    TIMESTAMP="--timestamp $TIMESTAMP"
+fi
+
+caUtils export-profile --name="$NAME" $TIMESTAMP --description="An installation profile used for configuration or miniprofile - $NAME" --output=$OUTDIR/$PROFILE.xml
+sed -i s/"profile.xsd"/"https:\/\/raw.githubusercontent.com\/collectiveaccess\/providence\/develop\/install\/profiles\/xml\/profile.xsd"/g $OUTDIR/$PROFILE.xml
+sed -i 's/<locales\/>/<locales>\<locale lang="en" country="AU">English \(Australian\)<\/locale>\<\/locales\>/g' $OUTDIR/$PROFILE.xml
+phpunit tests

@@ -61,6 +61,7 @@
         "bin/restoreMedia",
         "bin/startQueue",
         "bin/startUp",
-        "bin/wait-for"
+        "bin/wait-for",
+        "bin/exportProfile"
     ]
 }
