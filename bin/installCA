@@ -5,3 +5,4 @@ set -u
 wait-for "$DB_HOST:$DB_PORT"
 caUtils install --profile-name "$PROFILE" --admin-email="$ADMIN_EMAIL" --overwrite
 caUtils reset-password --user administrator --password "$ADMIN_PASSWORD"
+INSTALLING=1 phinx migrate
