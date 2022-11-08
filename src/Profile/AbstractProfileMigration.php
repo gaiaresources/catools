@@ -63,13 +63,6 @@ abstract class AbstractProfileMigration extends CollectiveaccessMigration
  
     abstract protected function getProfileName():string;
 
-    protected function isApplicable(): bool
-    {
-        $options = $this->getAdapter()->getOptions();
-        $lastMigration = (int) $options['includes_migrations_until'] ?? 0;
-        return (int) $this->getVersion() > $lastMigration;
-    }
-
     /**
      * @return string
      */

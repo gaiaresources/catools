@@ -46,4 +46,5 @@ if (isInstalled()){
     runProcess(Process::fromShellCommandline('phinx migrate'));
 } else {
     runProcess(Process::fromShellCommandline("caUtils install --profile-name $profile --admin-email=$email&&caUtils reset-password  --user administrator --password \"$password\""));
+    runProcess(Process::fromShellCommandline('INSTALLING=1 phinx migrate'));
 }

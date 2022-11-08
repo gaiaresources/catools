@@ -23,6 +23,15 @@ abstract class CollectiveaccessMigration extends AbstractMigration
 {
     public const INSTANCE_PARAMS = ['returnAs' => 'firstModelInstance'];
 
+    protected function isApplicable(): bool
+    {
+        $lastMigration = INCLUDE_MIGRATIONS_UNTIL ?? 0;
+        if (getenv('INSTALLING') ?: false){
+            return (int) $this->getVersion() > $lastMigration;
+        }
+        return true;
+    }
+
     /**
      * @param ca_editor_ui_screens|ca_bundle_displays $screenOrDisplay
      * @param ca_editor_ui_bundle_placements|ca_bundle_display_placements $placement
