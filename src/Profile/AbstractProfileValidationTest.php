@@ -1,5 +1,6 @@
 <?php
-namespace RWAHS\Profile;
+
+namespace CaTools\Profile;
 
 use Amp\Parallel\Context\ContextException;
 use Amp\TimeoutException;
@@ -12,25 +13,28 @@ use function Amp\Promise\timeout;
 use function Amp\Promise\timeoutWithDefault;
 use function Amp\Promise\wait;
 
-class ProfileValidationTest extends AbstractProfileTest
+abstract class AbstractProfileValidationTest extends AbstractProfileTest
 {
     public function testProfileConformsToSchema()
     {
         $this->xpath->registerNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         $url = $this->xpath->query('@xsi:noNamespaceSchemaLocation')->item(0)->textContent;
-        $this->assertTrue($this->profile->schemaValidate($url));    
+        $this->assertTrue($this->profile->schemaValidate($url));
+        $this->assertCount(0, $this->xpath->query('@base'), 'No base attribute should exist for this profile.');
     }
+
     public function testMiniProfilesConformToSchema()
     {
-        $basePath = dirname(__DIR__, 3) . "/src/db/migrations";
+        $this->markTestSkipped('to allow deployment to new environment');
+        $basePath = getenv('APP_DIR') . '/db/migrations';
         $allFiles = glob($basePath . '/*.xml');
         // So that we can capture file name warnings we replace the error handler.
-        $maxConcurrent = 4;
+        $maxConcurrent = 2;
         foreach (array_chunk($allFiles, $maxConcurrent) as $files) {
             $promises = [];
             foreach ($files as $file) {
                 // Use in set_error_handler.
-                $promises[$file] = timeout(enqueueCallable('RWAHS\Profile\ProfileValidationTest::validateMiniProfile', $file), 60000);
+                $promises[$file] = timeout(enqueueCallable('TAS\Profile\ProfileValidationTest::validateMiniProfile', $file), 60000);
             }
             try {
                 $responses = wait(all($promises));
@@ -69,5 +73,4 @@ class ProfileValidationTest extends AbstractProfileTest
         restore_error_handler();
         return $ret;
     }
-    
 }
