@@ -487,4 +487,19 @@ SET cmat.element_id = cme.element_id WHERE cmat.element_id IS NULL');
             }
         }
     }
+    /**
+     * @param array $renames
+     * @return void
+     * @throws ApplicationException
+     */
+    protected function renameLists(array $renames): void
+    {
+        foreach ($renames as $old => $new) {
+            $list = ca_lists::find(['list_code' => $old], self::INSTANCE_PARAMS);
+            if ($list) {
+                $list->set('list_code', $new);
+                $list->update();
+            }
+        }
+    }
 }
