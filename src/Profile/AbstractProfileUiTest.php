@@ -35,7 +35,7 @@ abstract class AbstractProfileUiTest extends AbstractProfileTest
         $attribute_count = 0;
         $failures = [];
         /** @var DOMElement $attribute_ui_placement */
-        foreach ($this->xpath->query("/profile/userInterfaces/userInterface/screens/screen/bundlePlacements/placement/bundle[contains(.,'.')]") as $attribute_ui_placement) {
+        foreach ($this->xpath->query("/profile/userInterfaces/userInterface/screens/screen/bundlePlacements/placement/bundle[contains(.,'.') or starts-with(.,'ca_attribute_') ]") as $attribute_ui_placement) {
             try {
 
                 /** @var DOMElement $ui */
@@ -47,7 +47,6 @@ abstract class AbstractProfileUiTest extends AbstractProfileTest
                 $ui_table = $ui->getAttribute('type');
                 $attribute_count++;
                 $attribute_code = preg_replace("/(ca_attribute_|^$ui_table\.)/", '', $attribute_ui_placement->textContent);
-                error_log($attribute_code);
                 $this->assertEquals(1, $this->xpath->query("/profile/elementSets/metadataElement[@code='$attribute_code']")->length, "The attribute `$attribute_code` should exist in the installation profile. Placement is at: " . $attribute_ui_placement->getNodePath());
                 $this->assertGreaterThanOrEqual(1, $this->xpath->query("/profile/elementSets/metadataElement[@code='$attribute_code']/typeRestrictions/restriction/table[text() = '$ui_table']")->length, "The attribute `$attribute_code` is used in a user interface for `$ui_table` ({$ui->getAttribute('code')}).
              The attribute does not have a type restriction for that table.
