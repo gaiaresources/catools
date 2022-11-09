@@ -7,6 +7,9 @@ use PHPUnit\Framework\ExpectationFailedException;
 
 class AbstractProfileElementTest extends AbstractProfileTest
 {
+    /** @var string[] List of container element codes that we want allow. These can be used for form layout / printing labels. */
+    protected const ALLOWED_EMPTY_CONTAINERS = [];
+
     public function testListAttributesHaveLists()
     {
         $list_elements = $this->xpath->query('//metadataElement[@datatype="List"]');
@@ -15,7 +18,6 @@ class AbstractProfileElementTest extends AbstractProfileTest
             $list_code = $list_element->getAttribute('list');
             $element_code = $list_element->getAttribute('code');
             $this->assertNotNull($list_code, "The list attribute needs to be set for the {$list_element->getNodePath()} element");
-
             $this->assertListExists($list_code, $element_code);
         }
     }
@@ -61,7 +63,16 @@ class AbstractProfileElementTest extends AbstractProfileTest
 
     public function testContainersHaveElements()
     {
-        $this->assertCount(0, $this->xpath->query('/profile/elementSets//metadataElement[@datatype="Container" and not(elements/metadataElement)]'), 'Container elements require child elements');
+        $emptyContainers = $this->xpath->query('/profile/elementSets//metadataElement[@datatype="Container" and not(elements/metadataElement)]');
+        $emptyContainerNames = [];
+        /** @var DOMElement $emptyContainer */
+        foreach ($emptyContainers as $emptyContainer) {
+            $emptyContainerName = (string)$emptyContainer->getAttribute('code');
+            if (!in_array($emptyContainerName, static::ALLOWED_EMPTY_CONTAINERS)){
+                $emptyContainerNames[] = $emptyContainerName;
+            }
+        }
+        $this->assertEquals([], $emptyContainerNames, 'Container elements require child elements');
     }
 
     public function testTypeRestrictionsAreNotNumeric()
