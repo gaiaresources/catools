@@ -25,16 +25,15 @@ abstract class AbstractProfileValidationTest extends AbstractProfileTest
 
     public function testMiniProfilesConformToSchema()
     {
-        $this->markTestSkipped('to allow deployment to new environment');
-        $basePath = getenv('APP_DIR') . '/db/migrations';
+        $basePath = getenv('APP_ROOT') . '/db/migrations';
         $allFiles = glob($basePath . '/*.xml');
         // So that we can capture file name warnings we replace the error handler.
-        $maxConcurrent = 2;
+        $maxConcurrent = 4;
         foreach (array_chunk($allFiles, $maxConcurrent) as $files) {
             $promises = [];
             foreach ($files as $file) {
                 // Use in set_error_handler.
-                $promises[$file] = timeout(enqueueCallable('TAS\Profile\ProfileValidationTest::validateMiniProfile', $file), 60000);
+                $promises[$file] = timeout(enqueueCallable('CaTools\Profile\AbstractProfileValidationTest::validateMiniProfile', $file), 120000);
             }
             try {
                 $responses = wait(all($promises));
