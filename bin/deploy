@@ -4,7 +4,7 @@ set -e
 set -u
 ln -sf vendor/collectiveaccess/providence $COLLECTIVEACCESS_HOME
 ln -sf $APP_ROOT/setup.php $COLLECTIVEACCESS_HOME/
-[ -f $APP_ROOT/$PROFILE.xml ] && ln -sf $APP_ROOT/installation-profile/profile/$PROFILE.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/$PROFILE.xml
+[ -f $APP_ROOT/$PROFILE.xml ] && ln -sf $APP_ROOT/$PROFILE.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/$PROFILE.xml
 [ -d $APP_ROOT/plugins ] && ln -sf $APP_ROOT/plugins/* $COLLECTIVEACCESS_HOME/app/plugins/
 [ -d $APP_ROOT/themes ] && ln -sf $APP_ROOT/themes/* $COLLECTIVEACCESS_HOME/themes/
 [ -d $APP_ROOT/printTemplates/labels ] && ln -sf $APP_ROOT/printTemplates/labels/* $COLLECTIVEACCESS_HOME/app/printTemplates/labels/local
