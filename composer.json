@@ -41,7 +41,13 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/collectiveaccess/providence"
+            "url": "https://github.com/collectiveaccess/providence",
+            "branch": "develop"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/collectiveaccess/pawtucket2",
+            "branch": "develop"
         }
     ],
     "require": {
