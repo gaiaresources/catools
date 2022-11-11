@@ -28,14 +28,12 @@ function linkDirectories() {
 }
 
 function deployProvidence() {
-    ln -sf vendor/collectiveaccess/providence $COLLECTIVEACCESS_HOME
     ln -sf $APP_ROOT/setup.php $COLLECTIVEACCESS_HOME/
     [ -f $APP_ROOT/$PROFILE.xml ] && ln -sf $APP_ROOT/$PROFILE.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/$PROFILE.xml
     [ -d $APP_ROOT/plugins ] && ln -sf $APP_ROOT/plugins/* $COLLECTIVEACCESS_HOME/app/plugins/
     [ -d $APP_ROOT/themes ] && ln -sf $APP_ROOT/themes/* $COLLECTIVEACCESS_HOME/themes/
 }
 function deployPawtucket() {
-    ln -sf vendor/collectiveaccess/pawtucket2 $PAWTUCKET_HOME
     ln -sf $APP_ROOT/setup.php.pawtucket $PAWTUCKET_HOME/setup.php
     PAWTUCKET_SOURCE_PATH=$APP_ROOT/pawtucket-theme
     [ -d $PAWTUCKET_SOURCE_PATH ] && ln -sf $PAWTUCKET_SOURCE_PATH $PAWTUCKET_HOME/themes/$PAWTUCKET_THEME
@@ -54,11 +52,13 @@ createDirectories
 
 if [[ ! -z ${COLLECTIVEACCESS_HOME:-} ]]; then
     echo "Deploying Providence"
+    ln -sf vendor/collectiveaccess/providence $COLLECTIVEACCESS_HOME
     composerInstall $COLLECTIVEACCESS_HOME
     deployProvidence
 fi
 if [[ ! -z ${PAWTUCKET_HOME:-} ]]; then
     echo "Deploying Pawtucket"
+    ln -sf vendor/collectiveaccess/pawtucket2 $PAWTUCKET_HOME
     composerInstall $PAWTUCKET_HOME
     deployPawtucket
 fi
