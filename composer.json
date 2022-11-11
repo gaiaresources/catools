@@ -68,7 +68,6 @@
     },
     "bin": [
         "bin/deploy",
-        "bin/deployPawtucket",
         "bin/dropDb",
         "bin/dump",
         "bin/installOrUpdate",
