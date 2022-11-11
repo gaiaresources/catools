@@ -41,11 +41,10 @@ function deployPawtucket() {
     # override the default templates to prevent duplicate menu items
 #    ln -sf $PAWTUCKET_SOURCE_PATH/app/printTemplates/results/* "${PAWTUCKET_HOME}/app/printTemplates/results/"
     # copy the en_US to en_AU
-    if [ $DEFAULT_LOCALE = "en_AU"]
+    if [ $DEFAULT_LOCALE = "en_AU" ]
     then
         ln -sf "${PAWTUCKET_HOME}/app/locale/en_GB" "${PAWTUCKET_HOME}/app/locale/en_AU"
     fi
-    popd
 }
 
 createDirectories
