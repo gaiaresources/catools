@@ -2,33 +2,64 @@
 set -x
 set -e
 set -u
-ln -sf vendor/collectiveaccess/providence $COLLECTIVEACCESS_HOME
-ln -sf $APP_ROOT/setup.php $COLLECTIVEACCESS_HOME/
-[ -f $APP_ROOT/$PROFILE.xml ] && ln -sf $APP_ROOT/$PROFILE.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/$PROFILE.xml
-[ -d $APP_ROOT/plugins ] && ln -sf $APP_ROOT/plugins/* $COLLECTIVEACCESS_HOME/app/plugins/
-[ -d $APP_ROOT/themes ] && ln -sf $APP_ROOT/themes/* $COLLECTIVEACCESS_HOME/themes/
-[ -d $APP_ROOT/printTemplates/labels ] && ln -sf $APP_ROOT/printTemplates/labels/* $COLLECTIVEACCESS_HOME/app/printTemplates/labels/local
-[ -d $APP_ROOT/printTemplates/summary ] && ln -sf $APP_ROOT/printTemplates/summary/* $COLLECTIVEACCESS_HOME/app/printTemplates/summary/local
-[ -d $APP_ROOT/printTemplates/results ] && ln -sf $APP_ROOT/printTemplates/results/* $COLLECTIVEACCESS_HOME/app/printTemplates/results/local
-mkdir -p media/collectiveaccess
-mkdir -p import
-mkdir -p data
-mkdir -p log
-mkdir -p backups
-pushd $COLLECTIVEACCESS_HOME
-composer install
-rm -rf media
-rm -rf import
-rm -rf app/log
-ln -sf $APP_ROOT/media .
-ln -sf $APP_ROOT/import .
-ln -sf $APP_ROOT/log app/
-popd
 
+function createDirectories() {
+    mkdir -p media/collectiveaccess
+    mkdir -p import
+    mkdir -p data
+    mkdir -p log
+    mkdir -p backups
+}
+
+function composerInstall() {
+    pushd $1
+    composer install --no-interaction
+    linkDirectories
+    popd
+}
+
+function linkDirectories() {
+    rm -rf media
+    rm -rf import
+    rm -rf app/log
+    ln -sf $APP_ROOT/media .
+    ln -sf $APP_ROOT/import .
+    ln -sf $APP_ROOT/log app/
+}
+
+function deployProvidence() {
+    ln -sf vendor/collectiveaccess/providence $COLLECTIVEACCESS_HOME
+    ln -sf $APP_ROOT/setup.php $COLLECTIVEACCESS_HOME/
+    [ -f $APP_ROOT/$PROFILE.xml ] && ln -sf $APP_ROOT/$PROFILE.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/$PROFILE.xml
+    [ -d $APP_ROOT/plugins ] && ln -sf $APP_ROOT/plugins/* $COLLECTIVEACCESS_HOME/app/plugins/
+    [ -d $APP_ROOT/themes ] && ln -sf $APP_ROOT/themes/* $COLLECTIVEACCESS_HOME/themes/
+}
+function deployPawtucket() {
+    ln -sf vendor/collectiveaccess/pawtucket2 $PAWTUCKET_HOME
+    ln -sf $APP_ROOT/setup.php.pawtucket $PAWTUCKET_HOME/setup.php
+    PAWTUCKET_SOURCE_PATH=$APP_ROOT/pawtucket-theme
+    [ -d $PAWTUCKET_SOURCE_PATH ] && ln -sf $PAWTUCKET_SOURCE_PATH $PAWTUCKET_HOME/themes/$PAWTUCKET_THEME
+    ln -sf $PAWTUCKET_SOURCE_PATH/app/lib/Auth/Adapters/FlindersOkta.php "${PAWTUCKET_HOME}/app/lib/Auth/Adapters/FlindersOkta.php"
+    # override the default templates to prevent duplicate menu items
+#    ln -sf $PAWTUCKET_SOURCE_PATH/app/printTemplates/results/* "${PAWTUCKET_HOME}/app/printTemplates/results/"
+    # copy the en_US to en_AU
+    if [ $DEFAULT_LOCALE = "en_AU"]
+    then
+        ln -sf "${PAWTUCKET_HOME}/app/locale/en_GB" "${PAWTUCKET_HOME}/app/locale/en_AU"
+    fi
+    popd
+}
+
+createDirectories
+
+if [[ ! -z ${COLLECTIVEACCESS_HOME:-} ]]; then
+    echo "Deploying Providence"
+    composerInstall $COLLECTIVEACCESS_HOME
+    deployProvidence
+fi
 if [[ ! -z ${PAWTUCKET_HOME:-} ]]; then
-    echo "Deploying pawtucket"
+    echo "Deploying Pawtucket"
+    composerInstall $PAWTUCKET_HOME
     deployPawtucket
 fi
-# Ensure media directories can be read by web server
-find media/collectiveaccess -type d -exec chmod 775 {} \;
 
