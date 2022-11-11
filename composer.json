@@ -79,6 +79,7 @@
         "bin/startQueue",
         "bin/startUp",
         "bin/wait-for",
-        "bin/exportProfile"
+        "bin/exportProfile",
+        "bin/fixMediaPermissions"
     ]
 }

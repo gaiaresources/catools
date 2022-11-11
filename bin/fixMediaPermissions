@@ -1,0 +1,3 @@
+ #!/usr/bin/env bash
+ # Ensure media directories can be read by web server
+ find $APP_ROOT/media/collectiveaccess -type d -exec chmod 775 {} \;

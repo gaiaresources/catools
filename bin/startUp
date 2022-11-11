@@ -4,4 +4,5 @@ set -u
 set -x
 wait-for $DB_HOST:$DB_PORT
 installOrUpdate
+fixMediaPermissions
 healthcheck
