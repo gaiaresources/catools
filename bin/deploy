@@ -52,15 +52,19 @@ function deployPawtucket() {
     fi
 }
 
+function isInstalled() {
+    composer show --name-only|grep -q $1
+}
+
 createDirectories
 
-if [[ ! -z ${COLLECTIVEACCESS_HOME:-} ]]; then
+if isInstalled 'collectiveaccess/providence'; then
     echo "Deploying Providence"
     ln -sf vendor/collectiveaccess/providence $COLLECTIVEACCESS_HOME
     composerInstall $COLLECTIVEACCESS_HOME
     deployProvidence
 fi
-if [[ ! -z ${PAWTUCKET_HOME:-} ]]; then
+if isInstalled 'collectiveaccess/pawtucket2'; then
     echo "Deploying Pawtucket"
     ln -sf vendor/collectiveaccess/pawtucket2 $PAWTUCKET_HOME
     composerInstall $PAWTUCKET_HOME
