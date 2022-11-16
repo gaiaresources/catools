@@ -38,8 +38,10 @@ function deployPawtucket() {
     PAWTUCKET_SOURCE_PATH=$APP_ROOT/pawtucket-theme
     if [ -d $PAWTUCKET_SOURCE_PATH ]
     then
-        ln -sf $PAWTUCKET_SOURCE_PATH $PAWTUCKET_HOME/themes/$PAWTUCKET_THEME || echo "No pawtucket theme exists"
+        ln -sf $PAWTUCKET_SOURCE_PATH $PAWTUCKET_HOME/themes/$PAWTUCKET_THEME
         ln -sf $PAWTUCKET_SOURCE_PATH/app/lib/Auth/Adapters/FlindersOkta.php "${PAWTUCKET_HOME}/app/lib/Auth/Adapters/FlindersOkta.php"
+    else
+        echo "No pawtucket theme exists"
     fi
     # override the default templates to prevent duplicate menu items
 #    ln -sf $PAWTUCKET_SOURCE_PATH/app/printTemplates/results/* "${PAWTUCKET_HOME}/app/printTemplates/results/"
