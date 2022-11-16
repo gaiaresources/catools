@@ -31,7 +31,7 @@ function deployProvidence() {
     ln -sf $APP_ROOT/setup.php $COLLECTIVEACCESS_HOME/
     [ -f $APP_ROOT/$PROFILE.xml ] && ln -sf $APP_ROOT/$PROFILE.xml $COLLECTIVEACCESS_HOME/install/profiles/xml/$PROFILE.xml || echo "No profile exists"
     [ -d $APP_ROOT/plugins ] && ln -sf $APP_ROOT/plugins/* $COLLECTIVEACCESS_HOME/app/plugins/ || echo "No plugins exist"
-    [ -d $APP_ROOT/themes ] && ln -sf $APP_ROOT/themes/* $COLLECTIVEACCESS_HOME/themes/ || eho "No themes exist"
+    [ -d $APP_ROOT/themes ] && ln -sf $APP_ROOT/themes/* $COLLECTIVEACCESS_HOME/themes/ || echo "No themes exist"
 }
 function deployPawtucket() {
     ln -sf $APP_ROOT/setup.php.pawtucket $PAWTUCKET_HOME/setup.php
