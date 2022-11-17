@@ -66,8 +66,10 @@ if isInstalled 'collectiveaccess/providence'; then
 fi
 if isInstalled 'collectiveaccess/pawtucket2'; then
     echo "Deploying Pawtucket"
+    pushd pawtucket-theme
     ln -sf vendor/collectiveaccess/pawtucket2 $PAWTUCKET_HOME
     composerInstall $PAWTUCKET_HOME
     deployPawtucket
+    popd
 fi
 
