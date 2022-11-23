@@ -20,9 +20,7 @@ const OVERWRITE = 'overwrite';
 	->addOption(FORMAT, 'f', InputOption::VALUE_OPTIONAL, 'The media format to fetch media with', 'original')
 	->addOption(OVERWRITE, 'o', InputOption::VALUE_NONE)
 	->setCode(function (InputInterface $input, OutputInterface $output) {
-		// output arguments and options
 		$prefix = $input->getArgument(PREFIX);
-
 		$format = $input->getOption(FORMAT);
 		$overwrite = $input->getOption(OVERWRITE);
 		$reps = ca_object_representations::find(['deleted' => false]);
