@@ -502,4 +502,35 @@ SET cmat.element_id = cme.element_id WHERE cmat.element_id IS NULL');
             }
         }
     }
+
+	protected function migrateMediaPlacement(): void
+	{
+		$bundleName = 'ca_object_representations';
+		$placements = ca_editor_ui_bundle_placements::find(['bundle_name' => $bundleName], ['returnAs' => 'modelInstances']);
+		// adapted from the default template ca_object_representations_default_editor_display_template in conf/app.conf
+		$template = <<<TEMPLATE
+          Format: ^ca_object_representations.media_format<br/>\r\n
+          Dimensions:^ca_object_representations.media_dimensions<br/>\r\n
+          Filesize: ^ca_object_representations.media_filesize<br/>\r\n
+          <ifdef code='ca_object_representations.media_colorspace'>Colorspace: ^ca_object_representations.media_bitdepth ^ca_object_representations.media_colorspace<br/></ifdef>\r\n
+          <ifdef code='ca_object_representations.original_filename'>File name: ^ca_object_representations.original_filename<br/></ifdef>\r\n
+          <ifdef code='ca_object_representations.page_count'>Pages: ^ca_object_representations.page_count<br/></ifdef>\r\n
+          <ifdef code='ca_object_representations.preview_count'>Previews: ^ca_object_representations.preview_count<br/></ifdef>\r\n
+          Access: ^ca_object_representations.access<br/>\r\n
+          Status: ^ca_object_representations.status<br/>
+TEMPLATE;
+		$settings = [
+			"uiStyle" => "NEW_UI",
+			"showBundlesForEditing"=>[
+				"ca_object_representations.preferred_labels.name", "type_id","access", "status", "media",
+			],
+			"display_template" => $template,
+		];
+		/** @var ca_editor_ui_bundle_placements $placement */
+		foreach ($placements as $placement) {
+			/** @var ca_editor_ui_screens $screen */
+			$screen = ca_editor_ui_screens::find(['screen_id' => $placement->get('screen_id')], ['returnAs' => 'firstModelInstance']);
+			$this->saveSettings($screen, $placement, $settings);
+		}
+	}
 }
