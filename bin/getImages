@@ -32,7 +32,7 @@ const OVERWRITE = 'overwrite';
 			$instance->load($repId);
 			$path = $instance->getWithTemplate("^ca_object_representations.media.$format.path");
 			$directory = dirname($path);
-			if (!is_dir($directory)) {
+			if ($directory && !is_dir($directory)) {
 				mkdir($directory, 0775, true);
 			}
 			if ($overwrite || !file_exists($path) || !filesize($path)) {
