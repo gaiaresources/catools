@@ -79,6 +79,7 @@
         "bin/startUp",
         "bin/wait-for",
         "bin/exportProfile",
-        "bin/fixMediaPermissions"
+        "bin/fixMediaPermissions",
+		"bin/getImages"
     ]
 }
