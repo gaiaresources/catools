@@ -1,0 +1,53 @@
+#!/usr/bin/env php
+<?php
+
+include_once getenv('COLLECTIVEACCESS_HOME') . '/setup.php';
+
+use Symfony\Component\Console\Helper\ProgressBar as Progress;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\SingleCommandApplication;
+
+const PREFIX = 'prefix';
+const FORMAT = 'format';
+const OVERWRITE = 'overwrite';
+(new SingleCommandApplication())
+	->setName('Get CollectiveAccess Images')
+	->setDescription('Retrieves images from a source CollectiveAccess instance based on database contents. Requires images to be accessible over the internet.')
+	->addArgument(PREFIX, InputArgument::REQUIRED, "Prefix to place before images in order to fetch them. eg. `https://artcm.flinders.edu.au/`")
+	->addOption(FORMAT, 'f', InputOption::VALUE_OPTIONAL, 'The media format to fetch media with', 'original')
+	->addOption(OVERWRITE, 'o', InputOption::VALUE_NONE)
+	->setCode(function (InputInterface $input, OutputInterface $output) {
+		$prefix = $input->getArgument(PREFIX);
+		$format = $input->getOption(FORMAT);
+		$overwrite = $input->getOption(OVERWRITE);
+		$reps = ca_object_representations::find(['deleted' => false]);
+		$instance = new ca_object_representations();
+		$p = new Progress($output, count($reps) ?: 1);
+		$p->setFormat('%current%/%max% [%bar%] -- %message%');
+		$p->setMessage("Retrieving media of format $format from $prefix");
+		foreach ($reps as $repId) {
+			$instance->load($repId);
+			$path = $instance->getWithTemplate("^ca_object_representations.media.$format.path");
+			$directory = dirname($path);
+			if ($directory && !is_dir($directory)) {
+				mkdir($directory, 0775, true);
+			}
+			if ($overwrite || !file_exists($path) || !filesize($path)) {
+				$sourceUrl = str_replace(__CA_BASE_DIR__, $prefix, $path);
+				if ($sourceUrl && $path) {
+					copy($sourceUrl, $path);
+					$p->setMessage("Fetched $sourceUrl");
+				}
+			} else {
+				$p->setMessage("Skipping $path because it exists");
+			}
+			$p->advance();
+		}
+		$p->setMessage("Finished fetching media of format $format from $prefix");
+		$p->finish();
+
+	})
+	->run();
