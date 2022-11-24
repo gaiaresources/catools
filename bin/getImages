@@ -37,8 +37,10 @@ const OVERWRITE = 'overwrite';
 			}
 			if ($overwrite || !file_exists($path) || !filesize($path)) {
 				$sourceUrl = str_replace(__CA_BASE_DIR__, $prefix, $path);
-				copy($sourceUrl, $path);
-				$p->setMessage("Fetched $sourceUrl");
+				if ($sourceUrl && $path) {
+					copy($sourceUrl, $path);
+					$p->setMessage("Fetched $sourceUrl");
+				}
 			} else {
 				$p->setMessage("Skipping $path because it exists");
 			}
