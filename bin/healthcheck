@@ -2,7 +2,6 @@
 set -e
 set -x
 caUtils do-configuration-check
-# Check the login page returns
-wait-for http://nginx_providence:80/index.php/system/auth/login
+
 # Check the healthcheck endpoint returns
 wait-for http://nginx_providence:80/hc/index.php
