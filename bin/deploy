@@ -38,7 +38,6 @@ function deployPawtucket() {
     if [ -d $PAWTUCKET_SOURCE_PATH ]
     then
         ln -sf $PAWTUCKET_SOURCE_PATH $PAWTUCKET_HOME/themes/$PAWTUCKET_THEME
-        ln -sf $PAWTUCKET_SOURCE_PATH/app/lib/Auth/Adapters/FlindersOkta.php "${PAWTUCKET_HOME}/app/lib/Auth/Adapters/FlindersOkta.php"
     else
         echo "No pawtucket theme exists"
     fi
