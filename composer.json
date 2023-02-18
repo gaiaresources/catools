@@ -86,6 +86,6 @@
         "bin/indexParallel",
         "bin/queue",
         "bin/reindexOtherTables",
-        "bin/taskQueue",
+        "bin/taskQueue"
     ]
 }
