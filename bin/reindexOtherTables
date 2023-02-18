@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set x
+tables=(ca_entities ca_occurrences ca_list_items ca_relationship_types ca_object_representations ca_storage_locations ca_set_items ca_user_groups ca_sets ca_users ca_places ca_object_lots ca_object_checkou
+ts ca_item_tags ca_loans ca_movements ca_tours ca_tour_stops ca_item_comments ca_collections)
+for table in "${tables[@]}"; do
+        caUtils rebuild-search-index -t $table
+done

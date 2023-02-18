@@ -80,6 +80,12 @@
         "bin/wait-for",
         "bin/exportProfile",
         "bin/fixMediaPermissions",
-		"bin/getImages"
+        "bin/getImages",
+        "bin/downloadLabels",
+        "bin/indexer",
+        "bin/indexParallel",
+        "bin/queue",
+        "bin/reindexOtherTables",
+        "bin/taskQueue",
     ]
 }

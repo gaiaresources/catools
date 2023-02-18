@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+<?php
+require_once(getenv('COLLECTIVEACCESS_HOME') . '/setup.php');
+$sleep = getenv('WORKER_JOB_SLEEP_TIME');
+$sleep = $sleep * 1000000;
+$queue = new TaskQueue();
+$queue->resetUnfinishedTasks();
+
+while (true) {
+    $queue->processQueue();        // Process queued tasks
+    $queue->runPeriodicTasks();    // Process recurring tasks implemented in plugins
+    usleep($sleep);
+}
+

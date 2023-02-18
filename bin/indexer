@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+require_once(getenv('COLLECTIVEACCESS_HOME') . '/setup.php');
+$sleep = getenv('WORKER_INDEXING_SLEEP_TIME');
+$sleep = $sleep * 1000000;
+if (ca_search_indexing_queue::lockExists()) {
+    if (ca_search_indexing_queue::lockCanBeRemoved()) {
+        ca_search_indexing_queue::lockRelease();
+        CLIUtils::addMessage(_t("Removed search indexing queue lock"));
+    } else {
+        CLIUtils::addMessage(_t("Insufficient privileges to remove search indexing queue. Try running caUtils under a user with privileges"));
+    }
+} else {
+    CLIUtils::addMessage(_t("Search indexing queue lock is not present"));
+}
+while (true) {
+    ca_search_indexing_queue::process();
+    usleep($sleep);
+}
+

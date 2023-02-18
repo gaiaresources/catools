@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -x
+set -u
+set -e
+mkdir -p ~/.parallel
+touch ~/.parallel/will-cite
+LIMIT=5000
+MAX=$(mysql -u${DB_USER} -p${DB_PASSWORD} -h${DB_HOST} ${DB_NAME} -B -N  -e "SELECT max(object_id) FROM ca_objects")
+export SHELL=$(type -p bash)
+function index {
+    LIMIT=$1
+    START=$2
+    END_ID=$(($START + $LIMIT))
+    time caUtils  rebuild-search-index --tables=ca_objects  --start_id=$START --end_id=$END_ID
+}
+export -f index
+DRYRUN=''
+JOBS="--jobs 4"
+seq 0 $LIMIT $MAX|parallel ${DRYRUN} $JOBS --progress --eta --delay 10 --results /tmp --line-buffer --tag --joblog /tmp/job.log index $LIMIT {}

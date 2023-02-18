@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -u
+LABEL=$1
+# Define an environment variable of CA_COOKIE which is the session ID of a current CA session.
+curl "http://tas.docker.localhost:8004/index.php/find/SearchObjects/printLabels/label_form/_pdf_$LABEL/download/1" \
+   -H "Cookie: collectiveaccess=$CA_COOKIE; CA_collectiveaccess_ui_locale=en_AU" \
+  --compressed -o "$LABEL".pdf
+evince "$LABEL".pdf
