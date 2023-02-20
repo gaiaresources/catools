@@ -1,4 +1,5 @@
 <?php
+
 namespace CaTools\Profile;
 
 use ApplicationException;
@@ -26,8 +27,8 @@ abstract class CollectiveaccessMigration extends AbstractMigration
     protected function isApplicable(): bool
     {
         $lastMigration = INCLUDE_MIGRATIONS_UNTIL ?? 0;
-        if (getenv('INSTALLING') ?: false){
-            return (int) $this->getVersion() > $lastMigration;
+        if (getenv('INSTALLING') ?: false) {
+            return (int)$this->getVersion() > $lastMigration;
         }
         return true;
     }
@@ -126,16 +127,20 @@ abstract class CollectiveaccessMigration extends AbstractMigration
      * @param string $bundleName
      * @param ca_editor_ui_screens $screen
      * @param ca_editor_uis $ui
-     * @param null|string $after
+     * @param null|string $relativeTo
      * @return array|ca_editor_ui_bundle_placements|false|int|mixed|null
      * @throws ApplicationException
      */
-    public function ensurePlacement(string $bundleName, ca_editor_ui_screens $screen, ca_editor_uis $ui, $after = null)
+    public function ensurePlacement(string $bundleName, ca_editor_ui_screens $screen, ca_editor_uis $ui, $relativeTo = null, string $position = 'after')
     {
         $placement = ca_editor_ui_bundle_placements::find(['bundle_name' => $bundleName, 'screen_id' => $screen->getPrimaryKey()], self::INSTANCE_PARAMS);
         if (!$placement) {
-            if ($after) {
-                $placementId = $ui->addPlacementToScreenAfter($screen->getPrimaryKey(), $bundleName, $bundleName, [], $after);
+            if ($relativeTo) {
+                if ($position === 'after') {
+                    $placementId = $ui->addPlacementToScreenAfter($screen->getPrimaryKey(), $bundleName, $bundleName, [], $relativeTo);
+                } elseif ($position === 'before') {
+                    $placementId = $ui->addPlacementToScreenBefore($screen->getPrimaryKey(), $bundleName, $bundleName, [], $relativeTo);
+                }
             } else {
                 $placementId = $ui->addPlacementToScreen($screen->getPrimaryKey(), $bundleName, $bundleName, []);
             }
@@ -361,7 +366,7 @@ SET cmat.element_id = cme.element_id WHERE cmat.element_id IS NULL');
 
     /**
      * Move an element to the top of the container that it is in.
-     * @param  string  $code
+     * @param string $code
      *
      * @throws \ApplicationException
      */
@@ -487,6 +492,7 @@ SET cmat.element_id = cme.element_id WHERE cmat.element_id IS NULL');
             }
         }
     }
+
     /**
      * @param array $renames
      * @return void
@@ -503,12 +509,12 @@ SET cmat.element_id = cme.element_id WHERE cmat.element_id IS NULL');
         }
     }
 
-	protected function migrateMediaPlacement(): void
-	{
-		$bundleName = 'ca_object_representations';
-		$placements = ca_editor_ui_bundle_placements::find(['bundle_name' => $bundleName], ['returnAs' => 'modelInstances']);
-		// adapted from the default template ca_object_representations_default_editor_display_template in conf/app.conf
-		$template = <<<TEMPLATE
+    protected function migrateMediaPlacement(): void
+    {
+        $bundleName = 'ca_object_representations';
+        $placements = ca_editor_ui_bundle_placements::find(['bundle_name' => $bundleName], ['returnAs' => 'modelInstances']);
+        // adapted from the default template ca_object_representations_default_editor_display_template in conf/app.conf
+        $template = <<<TEMPLATE
           Format: ^ca_object_representations.media_format<br/>\r\n
           Dimensions:^ca_object_representations.media_dimensions<br/>\r\n
           Filesize: ^ca_object_representations.media_filesize<br/>\r\n
@@ -519,18 +525,18 @@ SET cmat.element_id = cme.element_id WHERE cmat.element_id IS NULL');
           Access: ^ca_object_representations.access<br/>\r\n
           Status: ^ca_object_representations.status<br/>
 TEMPLATE;
-		$settings = [
-			"uiStyle" => "NEW_UI",
-			"showBundlesForEditing"=>[
-				"ca_object_representations.preferred_labels.name", "type_id","access", "status", "media",
-			],
-			"display_template" => $template,
-		];
-		/** @var ca_editor_ui_bundle_placements $placement */
-		foreach ($placements as $placement) {
-			/** @var ca_editor_ui_screens $screen */
-			$screen = ca_editor_ui_screens::find(['screen_id' => $placement->get('screen_id')], ['returnAs' => 'firstModelInstance']);
-			$this->saveSettings($screen, $placement, $settings);
-		}
-	}
+        $settings = [
+            "uiStyle" => "NEW_UI",
+            "showBundlesForEditing" => [
+                "ca_object_representations.preferred_labels.name", "type_id", "access", "status", "media",
+            ],
+            "display_template" => $template,
+        ];
+        /** @var ca_editor_ui_bundle_placements $placement */
+        foreach ($placements as $placement) {
+            /** @var ca_editor_ui_screens $screen */
+            $screen = ca_editor_ui_screens::find(['screen_id' => $placement->get('screen_id')], ['returnAs' => 'firstModelInstance']);
+            $this->saveSettings($screen, $placement, $settings);
+        }
+    }
 }
