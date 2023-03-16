@@ -55,7 +55,8 @@
         "symfony/process": "^5.0|^6.0",
         "robmorgan/phinx": "^0.12|^0.13",
         "ext-json": "*",
-        "amphp/parallel": "^1.4"
+        "amphp/parallel": "^1.4",
+        "symfony/console": "^5.4"
     },
     "suggest": {
         "collectiveaccess/providence": "In order to run CollectiveAccess Providence you should install this",
@@ -84,6 +85,7 @@
         "bin/downloadLabels",
         "bin/indexer",
         "bin/indexParallel",
+        "bin/indexRecordsFromTable",
         "bin/queue",
         "bin/reindexOtherTables",
         "bin/taskQueue"

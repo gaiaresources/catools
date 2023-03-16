@@ -1,0 +1,47 @@
+#!/usr/bin/env php
+<?php
+
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\SingleCommandApplication;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
+
+const ARG_TABLE = 'table';
+const OPT_LIMIT = 'limit';
+const OPT_OFFSET = 'offset';
+require_once getenv('COLLECTIVEACCESS_HOME') . '/setup.php';
+require_once 'vendor/autoload.php';
+(new SingleCommandApplication())
+    ->setName('Reindex records from table')
+    ->setDescription('Indexes a portion of records from a table.')
+    ->addArgument(ARG_TABLE, InputArgument::REQUIRED, "Specify the table that you want to index")
+    ->addOption(OPT_LIMIT, 'l', InputOption::VALUE_OPTIONAL, 'The number of records that you want to index', 1000)
+    ->addOption(OPT_OFFSET, 'o', InputOption::VALUE_OPTIONAL, 'The offset to set for records you want to index', 0)
+    ->setCode(function (InputInterface $input, OutputInterface $output) {
+        $table = $input->getArgument(ARG_TABLE);
+        $limit = (int)$input->getOption(OPT_LIMIT);
+        $offset = (int)$input->getOption(OPT_OFFSET);
+        if (!Datamodel::tableExists($table)){
+            throw new InvalidArgumentException('Table does not exist');
+        };
+        
+        $instance = Datamodel::getInstance($table);
+        $db = new Db();
+        $sql = "SELECT ".$instance->primaryKey()." FROM {$table}".($instance->hasField('deleted') ? " WHERE deleted = 0" : "");
+        $args = [];
+        if ($limit) {
+            $sql = "$sql LIMIT ?";
+            $args[] = $limit;
+            if ($offset) {
+                $sql = "$sql OFFSET ?";
+                $args[] = $offset;
+            }
+        }
+        $res = $db->query($sql, $args);
+        $ids = $res->getAllFieldValues($instance->primaryKey());
+        $indexer = new SearchIndexer($db);
+        $indexer->reindexRows($table, $ids);
+    })
+    ->run();
