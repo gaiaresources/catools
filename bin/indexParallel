@@ -10,10 +10,9 @@ DELAY=10
 MAX=$(mysql -u${DB_USER} -p${DB_PASSWORD} -h${DB_HOST} ${DB_NAME} -B -N  -e "SELECT count(*) FROM ${TABLE} WHERE ! deleted ")
 export SHELL=$(type -p bash)
 function index {
-    time indexParallel $1  --limit=$2 --offset=$3
+    time nice -n19 indexRecordsFromTable $1  --limit=$2 --offset=$3
 }
 export -f index
 DRYRUN=''
-#JOBS="--jobs 4"
-JOBS=""
-seq 0 $LIMIT $MAX|parallel ${DRYRUN} $JOBS --progress --eta --delay $DELAY --results /tmp/$TABLE --line-buffer --tag --joblog /tmp/$TABLE.log index $TABLE $LIMIT {}
+#DRYRUN='--dryrun'
+seq 0 $LIMIT $MAX|parallel ${DRYRUN} --progress --eta --delay ${DELAY} --results /tmp/${TABLE} --line-buffer --tag --joblog /tmp/${TABLE}.log index ${TABLE} ${LIMIT} {}

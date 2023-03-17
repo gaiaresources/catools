@@ -8,11 +8,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\SingleCommandApplication;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 
+require_once getenv('COLLECTIVEACCESS_HOME') . '/setup.php';
+require_once dirname(__DIR__) .'/vendor/autoload.php';
 const ARG_TABLE = 'table';
 const OPT_LIMIT = 'limit';
 const OPT_OFFSET = 'offset';
-require_once getenv('COLLECTIVEACCESS_HOME') . '/setup.php';
-require_once 'vendor/autoload.php';
 (new SingleCommandApplication())
     ->setName('Reindex records from table')
     ->setDescription('Indexes a portion of records from a table.')
@@ -42,6 +42,10 @@ require_once 'vendor/autoload.php';
         $res = $db->query($sql, $args);
         $ids = $res->getAllFieldValues($instance->primaryKey());
         $indexer = new SearchIndexer($db);
+        $n = count($ids);
+        $output->writeln("Starting to index $n records from table $table with offset $offset");
         $indexer->reindexRows($table, $ids);
+        $output->writeln("Indexed $n records from table $table");
+
     })
     ->run();
