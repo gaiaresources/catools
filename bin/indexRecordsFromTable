@@ -9,7 +9,7 @@ use Symfony\Component\Console\SingleCommandApplication;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 
 require_once getenv('COLLECTIVEACCESS_HOME') . '/setup.php';
-require_once dirname(__DIR__, 4) . '/autoload.php';
+require_once COMPOSER_VENDOR_AUTOLOADER_FILE;
 const ARG_TABLE = 'table';
 const OPT_LIMIT = 'limit';
 const OPT_OFFSET = 'offset';
