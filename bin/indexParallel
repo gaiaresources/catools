@@ -7,6 +7,7 @@ touch ~/.parallel/will-cite
 TABLE=$1
 LIMIT=500
 DELAY=10
+START="${2:-0}"
 MAX=$(mysql -u${DB_USER} -p${DB_PASSWORD} -h${DB_HOST} ${DB_NAME} -B -N  -e "SELECT count(*) FROM ${TABLE} WHERE ! deleted ")
 export SHELL=$(type -p bash)
 function index {
@@ -15,4 +16,4 @@ function index {
 export -f index
 DRYRUN=''
 #DRYRUN='--dryrun'
-seq 0 $LIMIT $MAX|parallel ${DRYRUN} --progress --eta --delay ${DELAY} --results /tmp/${TABLE} --line-buffer --tag --joblog /tmp/${TABLE}.log index ${TABLE} ${LIMIT} {}
+seq ${START} ${LIMIT} $MAX|parallel ${DRYRUN} --progress --eta --delay ${DELAY} --results /tmp/${TABLE} --line-buffer --tag --joblog /tmp/${TABLE}.log index ${TABLE} ${LIMIT} {}
