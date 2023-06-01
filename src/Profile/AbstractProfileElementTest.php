@@ -77,7 +77,7 @@ class AbstractProfileElementTest extends AbstractProfileTest
 
     public function testTypeRestrictionsAreNotNumeric()
     {
-        $settings = $this->xpath->query('//setting[@name="restrictToTypes"]');
+        $settings = $this->xpath->query('//setting[@name="restrictToTypes" or @name="restrict_to_types"]');
         /** @var DOMElement $setting */
         foreach ($settings as $setting) {
             $value = $setting->textContent;
