@@ -11,20 +11,16 @@ function createDirectories() {
     mkdir -p backups
 }
 
-function composerInstall() {
-    pushd $1
-    composer install --no-interaction
-    linkDirectories
-    popd
-}
-
 function linkDirectories() {
+    pushd $1
+    ln -sf $APP_ROOT/vendor .
     rm -rf media
     rm -rf import
     rm -rf app/log
     ln -sf $APP_ROOT/media .
     ln -sf $APP_ROOT/import .
     ln -sf $APP_ROOT/log app/
+    popd
 }
 
 function deployProvidence() {
@@ -59,7 +55,7 @@ createDirectories
 if isInstalled 'collectiveaccess/providence'; then
     echo "Deploying Providence"
     ln -sf vendor/collectiveaccess/providence $COLLECTIVEACCESS_HOME
-    composerInstall $COLLECTIVEACCESS_HOME
+    linkDirectories $COLLECTIVEACCESS_HOME
     deployProvidence
 fi
 if isInstalled 'collectiveaccess/pawtucket2'; then
@@ -67,7 +63,7 @@ if isInstalled 'collectiveaccess/pawtucket2'; then
     PAWTUCKET_SOURCE_PATH=$APP_ROOT/pawtucket-theme
     pushd $PAWTUCKET_SOURCE_PATH
     ln -sf $PAWTUCKET_SOURCE_PATH/vendor/collectiveaccess/pawtucket2 $PAWTUCKET_HOME
-    composerInstall $PAWTUCKET_HOME
+    linkDirectories $PAWTUCKET_HOME
     deployPawtucket
     popd
 fi
