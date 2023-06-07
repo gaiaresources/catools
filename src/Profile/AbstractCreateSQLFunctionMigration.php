@@ -24,12 +24,14 @@ abstract class AbstractCreateSQLFunctionMigration extends AbstractMigration
         if (!is_array($sql)) {
             $sql = [$sql];
         }
+        $status = false;
         foreach ($sql as $query) {
             $query = trim($query);
             if ($query) {
                 $stmt = $pdo->prepare($query);
-                $stmt->execute();
+                $status |= $stmt->execute();
             }
         }
+        return $status;
     }
 }
