@@ -13,10 +13,11 @@ function createDirectories() {
 
 function linkDirectories() {
     pushd $1
-    ln -sf $APP_ROOT/vendor .
+    rm -rf vendor
     rm -rf media
     rm -rf import
     rm -rf app/log
+    ln -sf $APP_ROOT/vendor .
     ln -sf $APP_ROOT/media .
     ln -sf $APP_ROOT/import .
     ln -sf $APP_ROOT/log app/
