@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -13,6 +14,72 @@ require_once dirname(__DIR__, 3) . '/autoload.php';
 const ARG_TABLE = 'table';
 const OPT_LIMIT = 'limit';
 const OPT_OFFSET = 'offset';
+/**
+ * Rebuild search index values for records from a table.
+ *
+ * Adapted from @see SearchIndexer::reindexRows()
+ * @param SearchIndexer $indexer
+ * @param Db $db
+ * @param string $table
+ * @param array $ids
+ * @param BaseModel $instance
+ * @param InputInterface $input
+ * @param OutputInterface $output
+ * @param array|null $options
+ * @return true|null
+ * @throws Exception
+ */
+function reindexRows(SearchIndexer   $indexer,
+                     Db              $db,
+                     string          $table,
+                     array           $ids,
+                     BaseModel       $instance,
+                     InputInterface  $input,
+                     OutputInterface $output,
+                     array           $options = null)
+{
+    if (!is_array($ids) && !sizeof($ids)) {
+        return null;
+    }
+    /* Constant that means that only the target ids will be indexed, not records relating to those records*/
+    define('__CollectiveAccess_IS_REINDEXING__', 1);
+
+    $elementIds = null;
+    if (method_exists($instance, "getApplicableElementCodes")) {
+        $elementIds = array_keys($instance->getApplicableElementCodes(null, false, false));
+    }
+
+    $tableName = $instance->tableName();
+    $tableNum = $instance->tableNum();
+    $primaryKey = $instance->primaryKey();
+    $fieldData = [];
+
+    /** @var array $intrinsicList */
+    $intrinsicList = $indexer->getFieldsToIndex($tableName, $tableName, ['intrinsicOnly' => true]);
+    $intrinsicList[$primaryKey] = [];
+    $limit = count($ids);
+    $progress = new ProgressBar($output, $limit ?? 1);
+    $stats = [];
+
+    if ($elementIds) {    // Pre-load attribute values for items to index; improves index performance
+        $output->writeln('Prefetching values');
+        ca_attributes::prefetchAttributes($db, $tableNum, $ids, $elementIds);
+        /** @var DbResult $fieldData */
+        $fieldDataResource = $db->query("SELECT " . join(", ", array_keys($intrinsicList)) . " FROM {$tableName} WHERE {$primaryKey} IN (?)", [$ids]);
+
+        $fieldData = [];
+        while ($fieldDataResource->nextRow()) {
+            $fieldData[(int)$fieldDataResource->get($primaryKey)] = $fieldDataResource->getRow();
+        }
+        $output->writeln('Finished prefetching values');
+    }
+    foreach ($ids as $i => $id) {
+        $ret = $indexer->indexRow($tableNum, $id, $fieldData[$id], true);
+        $stats[$ret] ++;
+        $progress->advance();
+    }
+    return $stats;
+}
 (new SingleCommandApplication())
     ->setName('Reindex records from table')
     ->setDescription('Indexes a portion of records from a table.')
@@ -44,8 +111,12 @@ const OPT_OFFSET = 'offset';
         $indexer = new SearchIndexer($db);
         $n = count($ids);
         $output->writeln("Starting to index $n records from table $table with offset $offset");
-        $indexer->reindexRows($table, $ids);
-        $output->writeln("Indexed $n records from table $table");
+        $success = reindexRows($indexer,$db, $table, $ids, $instance, $input, $output);
+        if ($success) {
+            $output->writeln("Indexed $n records from table $table");
+        } else {
+            throw new Exception('Failed to index rows');
+        }
 
     })
     ->run();

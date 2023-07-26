@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 require_once(getenv('COLLECTIVEACCESS_HOME') . '/setup.php');
-$sleep = getenv('WORKER_INDEXING_SLEEP_TIME');
+$sleep = getenv('WORKER_INDEXING_SLEEP_TIME') ?? 1;
 $sleep = $sleep * 1000000;
 if (ca_search_indexing_queue::lockExists()) {
     if (ca_search_indexing_queue::lockCanBeRemoved()) {
