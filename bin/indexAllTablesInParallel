@@ -1,0 +1,48 @@
+#!/usr/bin/env php
+<?php
+
+use Symfony\Component\Console\Exception\InvalidArgumentException;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\SingleCommandApplication;
+use Symfony\Component\Process\Process;
+
+require_once getenv('COLLECTIVEACCESS_HOME') . '/setup.php';
+require_once dirname(__DIR__, 3) . '/autoload.php';
+(new SingleCommandApplication())
+    ->setName('Reindex all tables in parallel')
+    ->setDescription('Indexes all records from all tables in parallel')
+    ->setCode(function (InputInterface $input, OutputInterface $output) {
+
+        $db = new Db();
+        $indexer = new SearchIndexer($db);
+        $tables = $indexer->getIndexedTables();
+        $tables = array_reverse($tables);
+        $table = new Table($output);
+        $table->setHeaders(['Name', 'Table Number', 'Number of Records', 'Display Name'])
+            ->setRows($tables)
+            ->setHeaderTitle('Tables to be reindexed')
+            ->render();
+
+        foreach ($tables as $tableInfo) {
+            $tableName = $tableInfo['name'];
+            $instance = Datamodel::getInstance($tableName);
+            $output->writeln("Reindexing $tableInfo[displayName]");
+            $whereClause = $instance->hasField('deleted') ? " WHERE ! deleted" : " WHERE TRUE";
+            $p = Process::fromShellCommandline("indexParallel $tableName --additional-sql '$whereClause'");
+            $p->setTimeout(null);
+            $p->mustRun(function ($type, $buffer) {
+                if (Process::ERR === $type) {
+                    error_log($buffer);
+                } else {
+                    echo $buffer;
+                }
+            });
+        }
+
+
+    })
+    ->run();

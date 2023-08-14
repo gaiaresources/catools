@@ -110,13 +110,18 @@ function reindexRows(SearchIndexer   $indexer,
         $ids = $res->getAllFieldValues($instance->primaryKey());
         $indexer = new SearchIndexer($db);
         $n = count($ids);
-        $output->writeln("Starting to index $n records from table $table with offset $offset");
-        $success = reindexRows($indexer,$db, $table, $ids, $instance, $input, $output);
-        if ($success) {
-            $output->writeln("Indexed $n records from table $table");
+        if ($n) {
+            $output->writeln("Starting to index $n records from table $table with offset $offset");
+            $success = reindexRows($indexer,$db, $table, $ids, $instance, $input, $output);
+            if ($success) {
+                $output->writeln("Indexed $n records from table $table");
+            } else {
+                throw new Exception('Failed to index rows');
+            }
         } else {
-            throw new Exception('Failed to index rows');
+            $output->writeln("<warn>There are no records in <strong>$table</strong></warn>");
         }
+
 
     })
     ->run();

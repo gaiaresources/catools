@@ -83,6 +83,7 @@
         "bin/fixMediaPermissions",
         "bin/getImages",
         "bin/downloadLabels",
+        "bin/indexAllTablesInParallel",
         "bin/indexer",
         "bin/indexParallel",
         "bin/indexRecordsFromTable",
