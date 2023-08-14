@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
 set -e
-# Processes the CA indexing queue and task queue.
+# Processes the CA task queue.
 # Jobs are run using a low priority nice value.
 
-# Kill child processes when this process exits: https://stackoverflow.com/a/2173421
-trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
-nice -n19 php -d memory_limit="$WORKER_INDEXING_MEMORY_LIMIT" "$APP_ROOT"/vendor/bin/indexer &
-INDEXING_PID=$!
-echo "Search indexing queue running with pid $INDEXING_PID"
 CURRENT_PID=$$
 echo "Starting to process task queue with pid $CURRENT_PID"
 nice -n19 php -d memory_limit="$WORKER_QUEUE_MEMORY_LIMIT" "$APP_ROOT"/vendor/bin/taskQueue
