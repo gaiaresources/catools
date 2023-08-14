@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+
+# Processes the CA indexing queue
+
+# Kill child processes when this process exits: https://stackoverflow.com/a/2173421
+trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
+
+INDEXING_PID=$$
+echo "Search indexing queue running with pid $INDEXING_PID"
+nice -n19 php -d memory_limit="$WORKER_INDEXING_MEMORY_LIMIT" "$APP_ROOT"/vendor/bin/indexer
