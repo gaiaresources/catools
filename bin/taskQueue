@@ -4,6 +4,13 @@ require_once(getenv('COLLECTIVEACCESS_HOME') . '/setup.php');
 $sleep = getenv('WORKER_JOB_SLEEP_TIME') ?? 1;
 $sleep = $sleep * 1000000;
 $queue = new TaskQueue();
+
+// We are starting the queue, so no current process should exist
+$o_appvars = new ApplicationVars();
+$va_processes = $o_appvars->getVar("taskqueue_processes");
+$o_appvars->setVar("taskqueue_processes", []);
+$o_appvars->save();
+
 $queue->resetUnfinishedTasks();
 
 while (true) {
