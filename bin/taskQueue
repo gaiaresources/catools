@@ -7,7 +7,6 @@ $queue = new TaskQueue();
 
 // We are starting the queue, so no current process should exist
 $o_appvars = new ApplicationVars();
-$va_processes = $o_appvars->getVar("taskqueue_processes");
 $o_appvars->setVar("taskqueue_processes", []);
 $o_appvars->save();
 
