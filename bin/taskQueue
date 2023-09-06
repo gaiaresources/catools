@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 require_once(getenv('COLLECTIVEACCESS_HOME') . '/setup.php');
-$sleep = getenv('WORKER_JOB_SLEEP_TIME') ?? 1;
+$sleep = getenv('WORKER_JOB_SLEEP_TIME') ?: 1;
 $sleep = $sleep * 1000000;
 $queue = new TaskQueue();
 
