@@ -37,7 +37,7 @@ function runProcess(Process $p): void
     });
 }
 $profile = getenv("PROFILE");
-$email = getenv("CA_ADMIN_EMAIL");
+$email = getenv("CA_ADMIN_EMAIL") ?: getenv("ADMIN_EMAIL");
 $password = getenv("ADMIN_PASSWORD");
 if (isInstalled()){
     $p = Process::fromShellCommandline('caUtils update-database-schema');
