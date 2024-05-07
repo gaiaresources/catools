@@ -4,9 +4,9 @@ set -e
 # Default values for options
 START=0
 LIMIT=500
-DELAY=10
+DELAY=1
 ADDITIONAL_SQL="WHERE ! deleted"
-JOB_PER_CORE=1
+JOB_PER_CORE=2
 TABLE=''
 DRYRUN=''
 
@@ -16,8 +16,8 @@ function usage {
     echo "Options:"
     echo "  -s, --start        Start index (default: 0)"
     echo "  -l, --limit        Limit the number of records (default: 500)"
-    echo "  -d, --delay        Delay between parallel jobs in seconds (default: 10)"
-    echo "  -j, --jobs         Number of parallel jobs per core (default: 1)"
+    echo "  -d, --delay        Delay between parallel jobs in seconds (default: 1)"
+    echo "  -j, --jobs         Number of parallel jobs per core (default: 2)"
     echo "      --additional-sql Additional SQL condition (default: 'WHERE ! deleted')"
     echo "      --dryrun       Dry run the indexing"
     echo "      --help         Display this help message"
