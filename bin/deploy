@@ -9,6 +9,7 @@ function createDirectories() {
     mkdir -p data
     mkdir -p log
     mkdir -p backups
+    mkdir -p tmp
 }
 
 function linkDirectories() {
@@ -17,10 +18,12 @@ function linkDirectories() {
     rm -rf media
     rm -rf import
     rm -rf app/log
+    rm -rf app/tmp
     ln -sf $APP_ROOT/vendor .
     ln -sf $APP_ROOT/media .
     ln -sf $APP_ROOT/import .
     ln -sf $APP_ROOT/log app/
+    ln -sf $APP_ROOT/tmp app/
     popd
 }
 
