@@ -13,10 +13,12 @@ use ca_list_items;
 use ca_lists;
 use ca_locales;
 use ca_metadata_elements;
+use ca_users;
 use CompositeCache;
 use Datamodel;
 use Db;
 use Exception;
+use PDO;
 use Phinx\Migration\AbstractMigration;
 use Symfony\Component\Process\Process;
 
