@@ -560,4 +560,25 @@ TEMPLATE;
             $user->update();
         }
     }
+
+
+    /**
+     * @param array $tables
+     */
+    public function reindexTablesInParallel(array $tables)
+    {
+        $output = $this->getOutput();
+        foreach ($tables as $tableName) {
+            $instance = Datamodel::getInstance($tableName);
+            $output->writeln("Reindexing $tableName");
+            $whereClause = $instance->hasField('deleted') ? " WHERE ! deleted" : " WHERE TRUE";
+            $p = Process::fromShellCommandline("indexParallel $tableName --additional-sql '$whereClause'");
+            $p->setTimeout(null);
+            $p->mustRun(function ($type, $buffer) use ($output) {
+                $output->write($buffer);
+            });
+        }
+
+    }
+
 }
