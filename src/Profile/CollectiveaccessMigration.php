@@ -65,7 +65,7 @@ abstract class CollectiveaccessMigration extends AbstractMigration
                 $savedValue = $savedSettings[$setting] ?? null;
                 if ($savedSettings === false) {
                     $errors[] = sprintf("Failed to save setting %s with value %s", $setting, json_encode($value));
-                } elseif ($savedValue != $value) {
+                } else if ($savedValue != $value) {
                     $errors[] = sprintf("Setting %s does not have the same set value (%s) as we have just tried to set (%s)", $setting, json_encode($savedValue), $value);
                 }
             }
@@ -138,7 +138,7 @@ abstract class CollectiveaccessMigration extends AbstractMigration
             if ($relativeTo) {
                 if ($position === 'after') {
                     $placementId = $ui->addPlacementToScreenAfter($screen->getPrimaryKey(), $bundleName, $bundleName, [], $relativeTo);
-                } elseif ($position === 'before') {
+                } else if ($position === 'before') {
                     $placementId = $ui->addPlacementToScreenBefore($screen->getPrimaryKey(), $bundleName, $bundleName, [], $relativeTo);
                 }
             } else {
@@ -537,6 +537,27 @@ TEMPLATE;
             /** @var ca_editor_ui_screens $screen */
             $screen = ca_editor_ui_screens::find(['screen_id' => $placement->get('screen_id')], ['returnAs' => 'firstModelInstance']);
             $this->saveSettings($screen, $placement, $settings);
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function clearUsersResultContexts(): void
+    {
+        /** @var PDOStatement $users */
+        $users = $this->query('SELECT user_id FROM ca_users');
+        foreach ($users->fetchAll(PDO::FETCH_COLUMN) as $u) {
+            $user = new ca_users($u);
+            $keys = $user->getVarKeys();
+            $keys = array_filter($keys, function ($key) {
+                $find = strpos($key, 'result_context_');
+                return $find === 0;
+            });
+            foreach ($keys as $key) {
+                $user->deleteVar($key);
+            }
+            $user->update();
         }
     }
 }
