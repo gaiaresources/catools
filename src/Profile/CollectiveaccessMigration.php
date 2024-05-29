@@ -566,13 +566,18 @@ TEMPLATE;
 
     /**
      * @param array $tables
+     * @see indexAllTablesInParallel
      */
     public function reindexTablesInParallel(array $tables)
     {
         $output = $this->getOutput();
         foreach ($tables as $tableName) {
             $instance = Datamodel::getInstance($tableName);
-            $output->writeln("Reindexing $tableName");
+            /** @var \IWLPlugSearchEngine $engine */
+            $output->writeln("Clearing index for $tableName.");
+            $engine = SearchEngine::newSearchEngine();
+            $engine->truncateIndex($instance->tableNum());
+            $output->writeln("Reindexing $tableName.");
             $whereClause = $instance->hasField('deleted') ? " WHERE ! deleted" : " WHERE TRUE";
             $p = Process::fromShellCommandline("indexParallel $tableName --additional-sql '$whereClause'");
             $p->setTimeout(null);

@@ -27,10 +27,12 @@ require_once dirname(__DIR__, 3) . '/autoload.php';
             ->setHeaderTitle('Tables to be reindexed')
             ->render();
 
+        $output->writeln("Recreating/clearing search indexes.");
+        $indexer->truncateIndex();
         foreach ($tables as $tableInfo) {
             $tableName = $tableInfo['name'];
             $instance = Datamodel::getInstance($tableName);
-            $output->writeln("Reindexing $tableInfo[displayName]");
+            $output->writeln("Reindexing $tableInfo[displayName].");
             $whereClause = $instance->hasField('deleted') ? " WHERE ! deleted" : " WHERE TRUE";
             $p = Process::fromShellCommandline("indexParallel $tableName --additional-sql '$whereClause'");
             $p->setTimeout(null);
