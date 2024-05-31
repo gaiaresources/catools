@@ -19,6 +19,7 @@ use Datamodel;
 use Db;
 use Exception;
 use PDO;
+use SearchEngine;
 use Phinx\Migration\AbstractMigration;
 use Symfony\Component\Process\Process;
 
