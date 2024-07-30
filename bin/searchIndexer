@@ -5,4 +5,9 @@ set -e
 
 INDEXING_PID=$$
 echo "Search indexing queue running with pid $INDEXING_PID"
-nice -n19 php -d memory_limit="$WORKER_INDEXING_MEMORY_LIMIT" "$APP_ROOT"/vendor/bin/indexer
+
+while true; do
+    nice -n19 php -d memory_limit="$WORKER_INDEXING_MEMORY_LIMIT" "$APP_ROOT"/vendor/bin/indexer
+    # Sleep for a short period to avoid a tight loop if indexer exits immediately
+    sleep 1
+done

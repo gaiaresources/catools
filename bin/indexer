@@ -1,8 +1,14 @@
 #!/usr/bin/env php
 <?php
 require_once(getenv('COLLECTIVEACCESS_HOME') . '/setup.php');
+
 $sleep = getenv('WORKER_INDEXING_SLEEP_TIME') ?: 1;
 $sleep = $sleep * 1000000;
+
+$maximum_time = getenv('WORKER_INDEXER_MAXIMUM_TIME') ?: 60;
+$maximum_time = $maximum_time * 60; // convert minutes to seconds
+$start_time = time();
+
 if (ca_search_indexing_queue::lockExists()) {
     if (ca_search_indexing_queue::lockCanBeRemoved()) {
         ca_search_indexing_queue::lockRelease();
@@ -13,8 +19,15 @@ if (ca_search_indexing_queue::lockExists()) {
 } else {
     CLIUtils::addMessage(_t("Search indexing queue lock is not present"));
 }
+
 while (true) {
     ca_search_indexing_queue::process();
     usleep($sleep);
-}
 
+    // Check the elapsed time
+    $elapsed_time = time() - $start_time;
+    if ($maximum_time > 0 && $elapsed_time >= $maximum_time) {
+        CLIUtils::addMessage(_t("Maximum indexing time reached. Exiting."));
+        exit(0);
+    }
+}

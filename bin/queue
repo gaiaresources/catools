@@ -5,4 +5,9 @@ set -e
 
 CURRENT_PID=$$
 echo "Starting to process task queue with pid $CURRENT_PID"
-nice -n19 php -d memory_limit="$WORKER_QUEUE_MEMORY_LIMIT" "$APP_ROOT"/vendor/bin/taskQueue
+
+while true; do
+    nice -n19 php -d memory_limit="$WORKER_QUEUE_MEMORY_LIMIT" "$APP_ROOT"/vendor/bin/taskQueue
+    # Sleep for a short period to avoid a tight loop if taskQueue exits immediately
+    sleep 1
+done
