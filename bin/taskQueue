@@ -20,13 +20,24 @@ $queue->resetUnfinishedTasks();
 
 while (true) {
     $queue->processQueue();        // Process queued tasks
+    $incompatibleDefinitions = [
+        '__CA_DONT_DO_HIERARCHICAL_INDEXING__',
+        '__CA_DONT_DO_SEARCH_INDEXING__',
+        '__CA_DONT_QUEUE_SEARCH_INDEXING__',
+        '__CA_DONT_LOG_CHANGES__'];
+    foreach ($incompatibleDefinitions as $definition) {
+        if (defined($definition)) {
+            CLIUtils::addMessage(_t('The constant %s is defined. Exiting task queue so it can restart cleanly and we can prceed with further tasks.', $definition));
+            exit(0);
+        }
+    }
     $queue->runPeriodicTasks();    // Process recurring tasks implemented in plugins
-    usleep($sleep);
-
     // Check the elapsed time
     $elapsed_time = time() - $start_time;
     if ($elapsed_time >= $maximum_time) {
-        CLIUtils::addMessage(_t("Maximum queue processing time reached. Exiting."));
+        CLIUtils::addMessage(_t('Maximum queue processing time reached. Exiting.'));
         exit(0);
     }
+    usleep($sleep);
+
 }
