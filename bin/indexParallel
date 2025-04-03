@@ -4,7 +4,7 @@ set -e
 # Default values for options
 START=0
 LIMIT=500
-DELAY=1
+DELAY=0.1
 ADDITIONAL_SQL="WHERE ! deleted"
 JOB_PER_CORE=2
 TABLE=''
